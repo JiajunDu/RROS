@@ -59,7 +59,7 @@ mod fifo_test;
 mod uapi;
 use factory::rros_early_init_factories;
 
-use crate::sched::this_rros_rq;
+use crate::sched::{this_rros_rq, RROS_CPU_AFFINITY};
 use kernel::memory_rros::rros_init_memory;
 mod crossing;
 mod file;
@@ -88,7 +88,7 @@ module! {
     license: b"GPL v2",
     params: {
         oobcpus_arg: str {
-            default: b"0\0",
+            default: b"0-1\0",
             permissions: 0o444,
             description: b"which cpus in the oob",
         },
@@ -368,6 +368,8 @@ impl KernelModule for Rros {
                 RROS_OOB_CPUS.cpumask_copy(&cpu_online_mask);
             }
         }
+
+        unsafe { RROS_CPU_AFFINITY.cpumask_copy(&RROS_OOB_CPUS); }
 
         let res = init_core(); //*sysheap_size_arg.read()
         let fac_reg;

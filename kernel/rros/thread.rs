@@ -273,7 +273,7 @@ pub fn rros_init_thread(
     // rq_s: Rc<RefCell<rros_rq>>,
     // iattr: Rc<RefCell<RrosInitThreadAttr>>,
     iattr: RrosInitThreadAttr,
-    rq: *mut rros_rq,
+    mut rq: *mut rros_rq,
     _fmt: &'static CStr,
     // args:fmt::Arguments<'_>
 ) -> Result<usize> {
@@ -292,6 +292,17 @@ pub fn rros_init_thread(
 
     if iattr_ptr.observable.is_some() {
         flags |= T_OBSERV as i32;
+    }
+
+    if rq == 0 as *mut rros_rq {
+        let mut affinity = CpumaskT::from_int(0);
+        unsafe { affinity.cpumask_and(&(*(iattr_ptr.affinity)), &RROS_CPU_AFFINITY) };
+        if affinity.cpumask_empty().is_err() {
+            rq = rros_cpu_rq(affinity.cpumask_first());
+        }
+        if rq == 0 as *mut rros_rq {
+            return Err(Error::EINVAL);
+        }
     }
 
     // pr_debug!("hello world flags {}", flags);
@@ -318,6 +329,10 @@ pub fn rros_init_thread(
     //     return Err(kernel::Error::ENOMEM);
     // }
     // cpumask_and(&thread->affinity, iattr->affinity, &rros_cpu_affinity);
+
+    unsafe {
+        (*thread_unwrap.locked_data().get()).affinity.cpumask_and(&(*(iattr_ptr.affinity)), &RROS_CPU_AFFINITY);
+    }
 
     thread_unwrap.lock().rq = Some(rq);
     thread_unwrap.lock().state = flags as u32;
@@ -742,45 +757,21 @@ unsafe extern "C" fn wakeup_kthread_parent(irq_work: *mut IrqWork) {
     }
 }
 
-// fn pin_to_initial_cpu(thread: Arc<SpinLock<RrosThread>>) {
-// //  static void pin_to_initial_cpu(struct RrosThread *thread)
-// // {
-//     let p = Task::current();
-// // 	struct task_struct *p = current;
-// // 	unsigned long flags;
-// // 	struct rros_rq *rq;
-// // 	int cpu;
+pub fn pin_to_initial_cpu(thread: Arc<SpinLock<RrosThread>>) {
+    let current_ptr = task::Task::current_ptr();
 
-// // 	/*
-// // 	 * @thread is the RROS extension of the current in-band
-// // 	 * task. If the current CPU is part of the affinity mask of
-// // 	 * this thread, pin the latter on this CPU. Otherwise pin it
-// // 	 * to the first CPU of that mask.
-// // 	 */
-//     let mut cpu = p::cpu();
-// // 	cpu = task_cpu(p);
-//     if CpumaskT::cpumask_test_cpu(cpu, (*thread.locked_data().get()).affinity) {
-//         cpu = CpumaskT::cpumaks_first((*thread.locked_data().get()).affinity)
-//     }
-// // 	if (!cpumask_test_cpu(cpu, &thread->affinity))
-// // 		cpu = cpumask_first(&thread->affinity);
+    let mut cpu: u32 = task::Task::task_cpu(current_ptr as *const _);
+    if unsafe { (*thread.locked_data().get()).affinity.cpumask_test_cpu(cpu) } == false {
+        cpu = unsafe { (*thread.locked_data().get()).affinity.cpumask_first() as u32 };
+    }
 
-//     p::set_cpus(CpumaskT::cpumaks_of(cpu));
-// // 	set_cpus_allowed_ptr(p, cpumask_of(cpu));
-// // 	/*
-// // 	 * @thread is still unstarted RROS-wise, we are in the process
-// // 	 * of mapping the current in-band task to it. Therefore
-// // 	 * rros_migrate_thread() can be called for pinning it on an
-// // 	 * out-of-band CPU.
-// // 	 */
-//     let rq = rros_cpu_rq(cpu);
-// // 	rq = rros_cpu_rq(cpu);
-// // 	raw_spin_lock_irqsave(&thread->lock, flags);
-// // 	rros_migrate_thread(thread, rq);
-// // 	raw_spin_unlock_irqrestore(&thread->lock, flags);
-// // }
+    unsafe { bindings::set_cpus_allowed_ptr(current_ptr, cpumask::CpumaskT::cpumask_of(cpu) as *const _); }
 
-// }
+    let rq = rros_cpu_rq(cpu as i32);
+    let flags: u64 = unsafe { (*thread.locked_data().get()).lock.raw_spin_lock_irqsave() };
+    rros_migrate_thread(thread.clone(), rq);
+    unsafe { (*thread.locked_data().get()).lock.raw_spin_unlock_irqrestore(flags); }
+}
 
 fn map_kthread_self(kthread: &mut RrosKthread) -> Result<usize> {
     let thread = kthread.thread.clone().unwrap();
@@ -788,7 +779,7 @@ fn map_kthread_self(kthread: &mut RrosKthread) -> Result<usize> {
     pr_debug!("map_kthread_self:in");
 
     // TODO: add the support of the pin_to_initial_cpu
-    // pin_to_initial_cpu(thread.clone());
+    pin_to_initial_cpu(thread.clone());
 
     let ret;
     unsafe {
@@ -1524,7 +1515,7 @@ fn uninit_thread(thread: Arc<SpinLock<RrosThread>>) {
 
 use crate::factory::{rros_init_element, RrosElement, RrosFactory};
 use core::ptr;
-use kernel::error::Error;
+use kernel::{cpumask, error::Error};
 
 pub static mut UTHREAD: Option<Arc<SpinLock<RrosThread>>> = None;
 
@@ -1861,7 +1852,7 @@ fn map_uthread_self(thread: Arc<SpinLock<RrosThread>>) -> Result<usize> {
     // 	thread->u_window = u_window;
 
     // TODO: add the support of pin_to_initial_cpu. This can be omitted as shown in the map_kthread_self
-    // 	pin_to_initial_cpu(thread);
+    pin_to_initial_cpu(thread.clone());
     // TODO: add the trace function
     // 	trace_rros_thread_map(thread);
 

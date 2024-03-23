@@ -277,5 +277,5 @@ pub fn rros_program_proxy_tick(clock: &RrosClock) {
 
 #[cfg(CONFIG_SMP)]
 pub fn rros_send_timer_ipi(_clock: &RrosClock, rq: *mut RrosRq) {
-    irq_send_oob_ipi(irq_get_timer_oob_ipi(), cpumask_of(rros_rq_cpu(rq)));
+    irq_send_oob_ipi(irq_get_timer_oob_ipi(), cpumask::CpumaskT::cpumask_of(rros_rq_cpu(rq) as u32));
 }
