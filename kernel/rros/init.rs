@@ -12,7 +12,7 @@
 //! Importing necessary features and modules
 
 use kernel::{
-    bindings, c_types, chrdev, cpumask, dovetail, irqstage, percpu, prelude::*, str::CStr, task,
+    bindings, c_types, chrdev, cpumask, dovetail, irqstage, percpu, prelude::*, str::CStr,
 };
 
 use core::str;
@@ -59,7 +59,7 @@ mod fifo_test;
 mod uapi;
 use factory::rros_early_init_factories;
 
-use crate::sched::this_rros_rq;
+use crate::sched::{this_rros_rq, RROS_CPU_AFFINITY};
 use kernel::memory_rros::rros_init_memory;
 mod crossing;
 mod file;
@@ -88,7 +88,7 @@ module! {
     license: b"GPL v2",
     params: {
         oobcpus_arg: str {
-            default: b"0\0",
+            default: b"0-1\0",
             permissions: 0o444,
             description: b"which cpus in the oob",
         },
@@ -328,10 +328,6 @@ fn test_lantency() {
 }
 impl KernelModule for Rros {
     fn init() -> Result<Self> {
-        let curr = task::Task::current_ptr();
-        unsafe {
-            bindings::set_cpus_allowed_ptr(curr, cpumask::CpumaskT::from_int(1).as_cpumas_ptr());
-        }
         pr_info!("Hello world from rros!\n");
         let init_state_arg_str = str::from_utf8(init_state_arg.read())?;
         setup_init_state(init_state_arg_str);
@@ -368,6 +364,8 @@ impl KernelModule for Rros {
                 RROS_OOB_CPUS.cpumask_copy(&cpu_online_mask);
             }
         }
+
+        unsafe { RROS_CPU_AFFINITY.cpumask_copy(&RROS_OOB_CPUS); }
 
         let res = init_core(); //*sysheap_size_arg.read()
         let fac_reg;
