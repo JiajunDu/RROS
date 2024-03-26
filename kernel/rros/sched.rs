@@ -2002,8 +2002,6 @@ pub unsafe extern "C" fn rros_schedule() {
 }
 
 extern "C" {
-    fn rust_helper_hard_local_irq_save() -> c_types::c_ulong;
-    fn rust_helper_hard_local_irq_restore(flags: c_types::c_ulong);
     #[allow(dead_code)]
     fn rust_helper_preempt_enable();
     #[allow(dead_code)]
@@ -2022,7 +2020,7 @@ unsafe extern "C" fn __rros_schedule(_arg: *mut c_types::c_void) -> i32 {
         let this_rq = this_rros_rq();
         let mut leaving_inband;
 
-        let flags = rust_helper_hard_local_irq_save();
+        let flags = lock::hard_local_irq_save();
 
         curr = (*this_rq).get_curr();
 
@@ -2039,7 +2037,7 @@ unsafe extern "C" fn __rros_schedule(_arg: *mut c_types::c_void) -> i32 {
             // raw_spin_unlock(&this_rq->lock);
             // raw_spin_unlock_irqrestore(&curr->lock, flags);
             // rust_helper_hard_local_irq_restore(flags);
-            lock::raw_spin_unlock_irqrestore(flags);
+            lock::hard_local_irq_restore(flags);
             return 0;
         }
 
@@ -2066,7 +2064,7 @@ unsafe extern "C" fn __rros_schedule(_arg: *mut c_types::c_void) -> i32 {
                 }
             }
             // rust_helper_hard_local_irq_restore(flags);
-            lock::raw_spin_unlock_irqrestore(flags);
+            lock::hard_local_irq_restore(flags);
             return 0;
         }
 
@@ -2121,7 +2119,7 @@ unsafe extern "C" fn __rros_schedule(_arg: *mut c_types::c_void) -> i32 {
 
         pr_debug!("the inband_tail is {}", inband_tail);
         if inband_tail == false {
-            lock::raw_spin_unlock_irqrestore(flags);
+            lock::hard_local_irq_restore(flags);
         }
         pr_debug!(
             "end of the rros_schedule uninit_thread: x ref is {}",
@@ -2297,7 +2295,7 @@ pub fn rros_get_thread_rq(
 ) -> Option<*mut rros_rq> {
     // pr_debug!("yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
     //todo raw_spin_lock_irqsave and raw_spin_lock
-    *flags = unsafe { rust_helper_hard_local_irq_save() };
+    *flags = lock::hard_local_irq_save();
     // unsafe{rust_helper_preempt_disable();}
     unsafe { (*thread.unwrap().locked_data().get()).rq.clone() }
 }
@@ -2307,10 +2305,11 @@ pub fn rros_put_thread_rq(
     _rq: Option<*mut rros_rq>,
     flags: c_types::c_ulong,
 ) -> Result<usize> {
-    unsafe {
-        rust_helper_hard_local_irq_restore(flags);
-        // rust_helper_preempt_enable();
-    }
+    // unsafe {
+    //     rust_helper_hard_local_irq_restore(flags);
+    //     // rust_helper_preempt_enable();
+    // }
+    lock::hard_local_irq_restore(flags);
     // TODO: raw_spin_unlock and raw_spin_unlock_irqrestore
     Ok(0)
 }
