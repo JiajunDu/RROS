@@ -759,9 +759,12 @@ pub fn pin_to_initial_cpu(thread: Arc<SpinLock<RrosThread>>) {
     let current_ptr = task::Task::current_ptr();
 
     let mut cpu: u32 = task::Task::task_cpu(current_ptr as *const _);
+    pr_warn!("[DJJSMP] old cpu is: {:?}", cpu);
     if unsafe { (*thread.locked_data().get()).affinity.cpumask_test_cpu(cpu) } == false {
         cpu = unsafe { (*thread.locked_data().get()).affinity.cpumask_first() as u32 };
     }
+
+    pr_warn!("[DJJSMP] new cpu is: {:?}", cpu);
 
     unsafe { bindings::set_cpus_allowed_ptr(current_ptr, cpumask::CpumaskT::cpumask_of(cpu) as *const _); }
 

@@ -78,6 +78,8 @@ mod xbuf;
 #[cfg(CONFIG_NET)]
 mod net;
 
+mod smp_test;
+
 // pub use net::netif_oob_switch_port;
 
 module! {
@@ -88,7 +90,7 @@ module! {
     license: b"GPL v2",
     params: {
         oobcpus_arg: str {
-            default: b"0-1\0",
+            default: b"0-3\0",
             permissions: 0o444,
             description: b"which cpus in the oob",
         },
@@ -409,6 +411,8 @@ impl KernelModule for Rros {
 
         // kthread::kthread_run(Some(threadfn), &mut rros_kthread2 as *mut rros_kthread as *mut c_types::c_void, c_str!("%s").as_char_ptr(),
         //  format_args!("hongyu2"));
+
+        smp_test::test_smp();
 
         Ok(Rros { factory: fac_reg })
     }
