@@ -29,7 +29,7 @@ pub fn rros_this_cpu_timers(clock: &RrosClock) -> *mut RrosTimerbase {
 }
 
 pub fn rros_timer_null_handler(timer: *mut RrosTimer) {
-    pr_debug!("i am in rros_timer_null_handler");
+    // pr_debug!("i am in rros_timer_null_handler");
 }
 
 pub struct RrosTimer {
@@ -368,9 +368,9 @@ pub fn rros_dequeue_timer(
     timer: Arc<SpinLock<RrosTimer>>,
     tq: &mut List<Arc<SpinLock<RrosTimer>>>,
 ) {
-    // pr_debug!("len tq is {}", tq.len());
+    // // pr_debug!("len tq is {}", tq.len());
     let timer_addr = unsafe { timer.clone().locked_data().get() };
-    // pr_debug!("the run timer add is {:p}", timer_addr);
+    // // pr_debug!("the run timer add is {:p}", timer_addr);
     unsafe {
         for i in 1..=tq.len() {
             let mut _x = tq.get_by_index(i).unwrap().value.clone();
@@ -483,9 +483,9 @@ pub fn program_timer(timer: Arc<SpinLock<RrosTimer>>, tq: &mut List<Arc<SpinLock
 }
 
 pub fn rros_start_timer(timer: Arc<SpinLock<RrosTimer>>, value: KtimeT, interval: KtimeT) {
-    // pr_debug!("yinyongcishu is {}",Arc::strong_count(&timer));
-    // pr_debug!("rros_start_timer: 1");
-    // pr_debug!("the start timer{:?} {:?}", value, interval);
+    // // pr_debug!("yinyongcishu is {}",Arc::strong_count(&timer));
+    // // pr_debug!("rros_start_timer: 1");
+    // // pr_debug!("the start timer{:?} {:?}", value, interval);
     unsafe {
         let mut flags = 0;
         let mut tmb = lock_timer_base(timer.clone(), &mut flags);
@@ -510,7 +510,7 @@ pub fn rros_start_timer(timer: Arc<SpinLock<RrosTimer>>, value: KtimeT, interval
         }
 
         (*timer.locked_data().get()).add_status(RROS_TIMER_RUNNING);
-        // pr_debug!("rros_start_timer: 2");
+        // // pr_debug!("rros_start_timer: 2");
         unsafe { program_timer(timer.clone(), &mut (*tmb).q) };
         unlock_timer_base(tmb, flags);
     }

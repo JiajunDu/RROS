@@ -32,7 +32,7 @@ const SYSCALL_PROPAGATE: i32 = 0;
 const SYSCALL_STOP: i32 = 1;
 
 fn rros_read(fd: i32, u_buf: *mut u8, size: isize) -> i64 {
-    pr_debug!("oob_read syscall is called");
+    // pr_debug!("oob_read syscall is called");
     let rfilp = rros_get_file(fd as u32);
     if rfilp.is_none() {
         return -(bindings::EBADF as i64);
@@ -53,13 +53,13 @@ fn rros_read(fd: i32, u_buf: *mut u8, size: isize) -> i64 {
     ret =
         unsafe { (*(*filp).f_op).oob_read.unwrap()(filp, u_buf as *mut i8, size as usize) as i64 };
     rfilp.put_file();
-    pr_debug!("oob_read syscall success, the value of ret is {}", ret);
+    // pr_debug!("oob_read syscall success, the value of ret is {}", ret);
 
     ret
 }
 
 fn rros_write(fd: i32, u_buf: *mut u8, size: isize) -> i64 {
-    pr_debug!("oob_write syscall is called");
+    // pr_debug!("oob_write syscall is called");
     let rfilp = rros_get_file(fd as u32);
     if rfilp.is_none() {
         return -(bindings::EBADF as i64);
@@ -80,7 +80,7 @@ fn rros_write(fd: i32, u_buf: *mut u8, size: isize) -> i64 {
     ret =
         unsafe { (*(*filp).f_op).oob_write.unwrap()(filp, u_buf as *mut i8, size as usize) as i64 };
     rfilp.put_file();
-    pr_debug!("oob_write syscall success, the value of ret is {}", ret);
+    // pr_debug!("oob_write syscall success, the value of ret is {}", ret);
 
     ret
 }
@@ -316,7 +316,7 @@ fn do_oob_syscall(stage: IrqStage, regs: PtRegs) -> i32 {
 
         // bad_syscall:
         // [TODO: add rros warning]
-        pr_warn!("Warning: invalid out-of-band syscall {}", nr);
+        // pr_warn!("Warning: invalid out-of-band syscall {}", nr);
         // printk(RROS_WARNING "invalid out-of-band syscall <%#x>\n", nr);
 
         set_oob_error(regs, -(bindings::ENOSYS as i32));
@@ -326,7 +326,7 @@ fn do_oob_syscall(stage: IrqStage, regs: PtRegs) -> i32 {
 
     nr = oob_syscall_nr(regs);
     if nr >= crate::uapi::rros::syscall::NR_RROS_SYSCALLS {
-        pr_debug!("invalid out-of-band syscall <{}>", nr);
+        // pr_debug!("invalid out-of-band syscall <{}>", nr);
 
         set_oob_error(regs, -(bindings::ENOSYS as i32));
         return SYSCALL_STOP;
@@ -337,7 +337,7 @@ fn do_oob_syscall(stage: IrqStage, regs: PtRegs) -> i32 {
         capability::KernelCapStruct::current_cap(),
         bindings::CAP_SYS_NICE as i32,
     ) != 0);
-    pr_debug!("curr is {:p} res is {}", curr, res1);
+    // pr_debug!("curr is {:p} res is {}", curr, res1);
     if curr == 0 as *mut SpinLock<RrosThread> || res1 {
         // [TODO: lack RROS_DEBUG]
         pr_err!("ERROR: syscall denied");

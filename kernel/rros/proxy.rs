@@ -163,10 +163,10 @@ pub fn proxy_is_readable(proxy: &RrosProxy) -> bool {
 }
 
 pub fn proxy_is_writeable(proxy: &RrosProxy) -> bool {
-    pr_debug!(
-        "the proxy clone flags is {}",
-        proxy.element.borrow().deref().clone_flags
-    );
+    // pr_debug!(
+    //     "the proxy clone flags is {}",
+    //     proxy.element.borrow().deref().clone_flags
+    // );
     (proxy.element.borrow().deref().clone_flags & RROS_CLONE_OUTPUT) != 0
 }
 
@@ -215,7 +215,7 @@ pub fn relay_output(proxy: &mut RrosProxy) -> Result<usize> {
                 n.try_into().unwrap(),
                 ppos,
             );
-            pr_debug!("pos: {}", pos);
+            // pr_debug!("pos: {}", pos);
             if ret >= 0 && !ppos.is_null() {
                 unsafe { (*filp.get_ptr()).f_pos = *ppos };
             }
@@ -353,7 +353,7 @@ pub fn do_proxy_write(filp: &File, mut u_buf: *const c_char, count: usize) -> is
                     let _ret = relay_output(unsafe { &mut (*proxy) });
                     return ret;
                 }
-                pr_debug!("there has been called");
+                // pr_debug!("there has been called");
                 ring.relay_work
                     .call_inband_from(ring.wq.as_ref().unwrap().deref().get_ptr());
             }
@@ -782,30 +782,30 @@ fn proxy_factory_build(
     mut clone_flags: i32,
     _state_offp: &u32,
 ) -> Rc<RefCell<RrosElement>> {
-    pr_debug!("clone_flags = {}", clone_flags);
+    // pr_debug!("clone_flags = {}", clone_flags);
     if clone_flags & !RROS_PROXY_CLONE_FLAGS != 0 {
-        pr_warn!("invalid proxy clone flags");
+        // pr_warn!("invalid proxy clone flags");
     }
-    pr_debug!("the u_attrs: {:p}", u_attrs.unwrap());
+    // pr_debug!("the u_attrs: {:p}", u_attrs.unwrap());
 
     let attrs = RrosProxyAttrs::from_ptr(u_attrs.unwrap() as *mut RrosProxyAttrs);
-    pr_debug!("the attrs.fd is {}", attrs.fd);
+    // pr_debug!("the attrs.fd is {}", attrs.fd);
     let bufsz = attrs.bufsz;
 
     if bufsz == 0 && (clone_flags & (RROS_CLONE_INPUT | RROS_CLONE_OUTPUT) != 0) {
-        pr_warn!("invalid proxy bufsz value");
+        // pr_warn!("invalid proxy bufsz value");
     }
 
     //If a granularity is set, the buffer size must be a multiple of the granule size.
     if attrs.granularity > 1 && bufsz % attrs.granularity > 0 {
-        pr_warn!("invalid granularity value");
+        // pr_warn!("invalid granularity value");
     }
 
-    pr_debug!("clone_flags = {}", clone_flags);
+    // pr_debug!("clone_flags = {}", clone_flags);
     if bufsz > 0 && (clone_flags & (RROS_CLONE_INPUT | RROS_CLONE_OUTPUT) == 0) {
         clone_flags |= RROS_CLONE_OUTPUT;
     }
-    pr_debug!("clone_flags = {}", clone_flags);
+    // pr_debug!("clone_flags = {}", clone_flags);
 
     let boxed_proxy = Box::try_new(RrosProxy::new(attrs.fd).unwrap()).unwrap();
     let proxy = Box::into_raw(boxed_proxy);
@@ -816,7 +816,7 @@ fn proxy_factory_build(
         }
 
         // TODO: rros_init_poll_head()
-        pr_debug!("clone_flags = {}", clone_flags);
+        // pr_debug!("clone_flags = {}", clone_flags);
         if (clone_flags & RROS_CLONE_OUTPUT) != 0 {
             let res = init_output_ring(&mut (*proxy), bufsz, attrs.granularity);
 
@@ -870,7 +870,7 @@ impl FileOpener<u8> for ProxyOps {
     fn open(shared: &u8, _fileref: &File) -> Result<Self::Wrapper> {
         let mut data = CloneData::default();
         data.ptr = shared as *const u8 as *mut u8;
-        pr_debug!("open proxy device success");
+        // pr_debug!("open proxy device success");
         Ok(Box::try_new(data)?)
     }
 }
@@ -886,9 +886,9 @@ impl FileOperations for ProxyOps {
         data: &mut T,
         _offset: u64,
     ) -> Result<usize> {
-        pr_debug!("I'm the read ops of the proxy factory.");
+        // pr_debug!("I'm the read ops of the proxy factory.");
         let ret = proxy_read(file, data);
-        pr_debug!("the result of proxy read is {}", ret);
+        // pr_debug!("the result of proxy read is {}", ret);
         if ret < 0 {
             Err(Error::from_kernel_errno(ret.try_into().unwrap()))
         } else {
@@ -897,9 +897,9 @@ impl FileOperations for ProxyOps {
     }
 
     fn oob_read<T: IoBufferWriter>(_this: &CloneData, file: &File, data: &mut T) -> Result<usize> {
-        pr_debug!("I'm the oob_read ops of the proxy factory.");
+        // pr_debug!("I'm the oob_read ops of the proxy factory.");
         let ret = proxy_oob_read(file, data);
-        pr_debug!("the result of proxy oob_read is {}", ret);
+        // pr_debug!("the result of proxy oob_read is {}", ret);
         if ret < 0 {
             Err(Error::from_kernel_errno(ret.try_into().unwrap()))
         } else {
@@ -913,9 +913,9 @@ impl FileOperations for ProxyOps {
         data: &mut T,
         _offset: u64,
     ) -> Result<usize> {
-        pr_debug!("I'm the write ops of the proxy factory.");
+        // pr_debug!("I'm the write ops of the proxy factory.");
         let ret = proxy_write(file, data);
-        pr_debug!("the result of proxy write is {}", ret);
+        // pr_debug!("the result of proxy write is {}", ret);
         if ret < 0 {
             Err(Error::from_kernel_errno(ret.try_into().unwrap()))
         } else {
@@ -924,9 +924,9 @@ impl FileOperations for ProxyOps {
     }
 
     fn oob_write<T: IoBufferReader>(_this: &CloneData, file: &File, data: &mut T) -> Result<usize> {
-        pr_debug!("I'm the oob_write ops of the proxy factory.");
+        // pr_debug!("I'm the oob_write ops of the proxy factory.");
         let ret = proxy_oob_write(file, data);
-        pr_debug!("the result of proxy oob_write is {}", ret);
+        // pr_debug!("the result of proxy oob_write is {}", ret);
         if ret < 0 {
             Err(Error::from_kernel_errno(ret.try_into().unwrap()))
         } else {
@@ -935,7 +935,7 @@ impl FileOperations for ProxyOps {
     }
 
     fn release(_this: Box<CloneData>, _file: &File) {
-        pr_debug!("I'm the release ops from the proxy ops.");
+        // pr_debug!("I'm the release ops from the proxy ops.");
         // FIXME: put the rros element
     }
 }

@@ -20,7 +20,7 @@ pub fn test_init_thread(thread: Arc<SpinLock<RrosThread>>, prio: i32) -> Result<
 
 #[allow(dead_code)]
 pub fn test_rros_enqueue_fifo_thread() -> Result<usize> {
-    pr_debug!("~~~test_rros_enqueue_fifo_thread begin~~~");
+    // pr_debug!("~~~test_rros_enqueue_fifo_thread begin~~~");
     unsafe {
         let mut length;
 
@@ -84,35 +84,35 @@ pub fn test_rros_enqueue_fifo_thread() -> Result<usize> {
         __rros_enqueue_fifo_thread(thread1.clone())?;
 
         length = (*rq_ptr1).fifo.runnable.head.clone().unwrap().len();
-        pr_debug!("test_rros_enqueue_fifo_thread: length is  {}", length);
+        // pr_debug!("test_rros_enqueue_fifo_thread: length is  {}", length);
 
         __rros_enqueue_fifo_thread(thread2.clone())?;
 
         length = (*rq_ptr1).fifo.runnable.head.clone().unwrap().len();
-        pr_debug!("test_rros_enqueue_fifo_thread: length is  {}", length);
+        // pr_debug!("test_rros_enqueue_fifo_thread: length is  {}", length);
 
         __rros_enqueue_fifo_thread(thread3.clone())?;
 
         length = (*rq_ptr1).fifo.runnable.head.clone().unwrap().len();
-        pr_debug!("test_rros_enqueue_fifo_thread: length is  {}", length);
-        pr_debug!("~~~test_rros_enqueue_fifo_thread end~~~");
+        // pr_debug!("test_rros_enqueue_fifo_thread: length is  {}", length);
+        // pr_debug!("~~~test_rros_enqueue_fifo_thread end~~~");
 
         //__rros_dequeue_fifo_thread passed test.
-        pr_debug!("~~~test_rros_dequeue_fifo_thread begin~~~");
+        // pr_debug!("~~~test_rros_dequeue_fifo_thread begin~~~");
 
         __rros_dequeue_fifo_thread(thread1.clone())?;
         length = (*rq_ptr1).fifo.runnable.head.clone().unwrap().len();
-        pr_debug!("test_rros_enqueue_fifo_thread: length1 is  {}", length);
+        // pr_debug!("test_rros_enqueue_fifo_thread: length1 is  {}", length);
 
         __rros_dequeue_fifo_thread(thread2.clone())?;
         length = (*rq_ptr1).fifo.runnable.head.clone().unwrap().len();
-        pr_debug!("test_rros_enqueue_fifo_thread: length2 is  {}", length);
+        // pr_debug!("test_rros_enqueue_fifo_thread: length2 is  {}", length);
 
         __rros_dequeue_fifo_thread(thread3.clone())?;
         length = (*rq_ptr1).fifo.runnable.head.clone().unwrap().len();
-        pr_debug!("test_rros_enqueue_fifo_thread: length3 is  {}", length);
+        // pr_debug!("test_rros_enqueue_fifo_thread: length3 is  {}", length);
 
-        pr_debug!("~~~test_rros_dequeue_fifo_thread end~~~");
+        // pr_debug!("~~~test_rros_dequeue_fifo_thread end~~~");
     }
     Ok(0)
 }

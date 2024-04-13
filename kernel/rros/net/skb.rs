@@ -114,7 +114,7 @@ impl RrosSkBuff {
         let clone: *mut bindings::sk_buff =
             if unsafe { !rust_helper_list_empty(&clone_data_control.queue) } {
                 clone_data_control.count -= 1;
-                pr_debug!("clone skb count:{}", clone_data_control.count);
+                // pr_debug!("clone skb count:{}", clone_data_control.count);
                 list_get_entry!(
                     &mut clone_data_control.queue,
                     bindings::sk_buff,
@@ -197,9 +197,9 @@ impl RrosSkBuff {
             if timeout == RROS_NONBLOCK {
                 break;
             }
-            pr_debug!("I am in the dev_alloc_skb loop");
+            // pr_debug!("I am in the dev_alloc_skb loop");
             rst.rstate.pool_wait.locked_add(timeout, tmode);
-            pr_debug!("I am in the dev_alloc_skb loop after adding");
+            // pr_debug!("I am in the dev_alloc_skb loop after adding");
             rst.rstate.pool_wait.lock.raw_spin_unlock_irqrestore(flags);
             let ret = rst.rstate.pool_wait.wait_schedule();
             if ret != 0 {
@@ -327,10 +327,10 @@ impl RrosSkBuff {
         };
         unsafe { (*CLONE_QUEUE.locked_data().get()).count += 1 };
         unsafe {
-            pr_debug!(
-                "free skb count:{}",
-                (*CLONE_QUEUE.locked_data().get()).count
-            )
+            // pr_debug!(
+            //     "free skb count:{}",
+            //     (*CLONE_QUEUE.locked_data().get()).count
+            // )
         };
         CLONE_QUEUE.irq_unlock_noguard(flags);
     }

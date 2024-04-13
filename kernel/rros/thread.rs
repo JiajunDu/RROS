@@ -185,7 +185,7 @@ impl FileOperations for ThreadOps {
         _data: &mut T,
         _offset: u64,
     ) -> Result<usize> {
-        pr_debug!("I'm the read ops of the rros thread factory.");
+        // pr_debug!("I'm the read ops of the rros thread factory.");
         Ok(1)
     }
 }
@@ -282,7 +282,7 @@ pub fn rros_init_thread(
     let _gravity: i32;
 
     if flags & (T_ROOT as i32) == 0x0 {
-        pr_info!("called timesssss");
+        // pr_info!("called timesssss");
         flags |= (T_DORMANT | T_INBAND) as i32;
     }
 
@@ -304,7 +304,7 @@ pub fn rros_init_thread(
         }
     }
 
-    // pr_debug!("hello world flags {}", flags);
+    // // pr_debug!("hello world flags {}", flags);
     // TODO: add the support for the affinity, this can be related to the `pin_to_initial_cpu()` function
     // if rq.is_none(){
     //     if (!alloc_cpumask_var(&affinity, GFP_KERNEL))
@@ -317,13 +317,13 @@ pub fn rros_init_thread(
     // 		return -EINVAL;
     // }
     // va_start(args,fmt);
-    // pr_debug!("yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
+    // // pr_debug!("yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
     let thread_clone = thread.clone();
     let thread_unwrap = thread_clone.unwrap();
     // let mut thread_lock = thread_unwrap.lock();
     // thread_lock.name = kvasprintf(gfp, fmt, args);
     // va_end(args);
-    // pr_debug!("hello world");
+    // // pr_debug!("hello world");
     // if thread_lock.name == " "{
     //     return Err(kernel::Error::ENOMEM);
     // }
@@ -349,7 +349,7 @@ pub fn rros_init_thread(
 
     // thread_lock.rq = Some(rq);
     // thread_lock.state = flags as __u32;
-    // pr_debug!("{}", thread_lock.state);
+    // // pr_debug!("{}", thread_lock.state);
     // thread_lock.info = 0;
     // thread_lock.local_info = 0;
     // thread_lock.wprio = idle::RROS_IDLE_PRIO;
@@ -379,7 +379,7 @@ pub fn rros_init_thread(
         .deref_mut()
         .inband_work
         .init_irq_work(inband_task_wakeup)?;
-    // pr_debug!("yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
+    // // pr_debug!("yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
 
     //tp set gps
     // let mut gps = unsafe{RROS_SYSTEM_HEAP.rros_alloc_chunk((size_of::<RrosTpSchedule>() + 4 * size_of::<RrosTpWindow>()) as usize)};
@@ -420,7 +420,7 @@ pub fn rros_init_thread(
         )
     };
     ptimer.lock().thread = Some(thread_unwrap.clone());
-    pr_info!("rros_init_thread success!");
+    // pr_info!("rros_init_thread success!");
     Ok(0)
 }
 
@@ -527,7 +527,7 @@ fn __rros_run_kthread(kthread: &mut RrosKthread, _clone_flags: i32) -> Result<us
     match res {
         Ok(_o) => (),
         Err(_e) => {
-            pr_debug!("your thread creation failed!!!!!!");
+            // pr_debug!("your thread creation failed!!!!!!");
             // uninit_thread(
             //     &mut (*(Arc::into_raw(kthread.thread.clone().as_mut().unwrap().clone())
             //         as *mut SpinLock<RrosThread>)),
@@ -538,7 +538,7 @@ fn __rros_run_kthread(kthread: &mut RrosKthread, _clone_flags: i32) -> Result<us
         }
     }
     // if  {
-    //     pr_debug!("your thread creation failed!!!!!!");
+    //     // pr_debug!("your thread creation failed!!!!!!");
     //     return Err();
     // }
     // p = kthread_run(kthread_trampoline, kthread, "%s", thread->name);
@@ -549,29 +549,29 @@ fn __rros_run_kthread(kthread: &mut RrosKthread, _clone_flags: i32) -> Result<us
 
     // rros_index_factory_element(&thread->element);
 
-    pr_debug!("thread before wait_for_completion");
+    // pr_debug!("thread before wait_for_completion");
     kthread.done.wait_for_completion();
-    pr_debug!("thread after wait_for_completion ");
+    // pr_debug!("thread after wait_for_completion ");
 
     if kthread.status != 0x0 {
-        pr_debug!("__rros_run_kthread: kthread.status != 0x0");
+        // pr_debug!("__rros_run_kthread: kthread.status != 0x0");
         return Err(kernel::Error::EINVAL);
     }
 
-    pr_debug!("thread before release {}", unsafe {
-        (*thread.locked_data().get()).state
-    });
+    // pr_debug!("thread before release {}", unsafe {
+    //     (*thread.locked_data().get()).state
+    // });
     rros_release_thread(thread.clone(), T_DORMANT as u32, 0 as u32);
-    pr_debug!("thread after release {}", unsafe {
-        (*thread.locked_data().get()).state
-    });
+    // pr_debug!("thread after release {}", unsafe {
+    //     (*thread.locked_data().get()).state
+    // });
 
     unsafe {
         rros_schedule();
     }
-    pr_debug!("thread after sched {}", unsafe {
-        (*thread.locked_data().get()).state
-    });
+    // pr_debug!("thread after sched {}", unsafe {
+    //     (*thread.locked_data().get()).state
+    // });
 
     Ok(0)
 }
@@ -583,7 +583,7 @@ const MAX_RT_PRIO: i32 = 100;
 
 unsafe extern "C" fn kthread_trampoline(arg: *mut c_types::c_void) -> c_types::c_int {
     let kthread: &mut RrosKthread;
-    // pr_debug!("the thread add is {:p}", arg);
+    // // pr_debug!("the thread add is {:p}", arg);
     unsafe {
         let tmp = arg as *mut RrosKthread;
         kthread = &mut *tmp;
@@ -615,10 +615,10 @@ unsafe extern "C" fn kthread_trampoline(arg: *mut c_types::c_void) -> c_types::c
     }
 
     unsafe {
-        pr_debug!(
-            "kthread_trampoline: state1 in the thread{}",
-            (*curr.locked_data().get()).state
-        );
+        // pr_debug!(
+        //     "kthread_trampoline: state1 in the thread{}",
+        //     (*curr.locked_data().get()).state
+        // );
     }
     let param = types::SchedParam::new(prio);
     sched_setscheduler(
@@ -628,23 +628,23 @@ unsafe extern "C" fn kthread_trampoline(arg: *mut c_types::c_void) -> c_types::c
     );
 
     unsafe {
-        pr_debug!(
-            "kthread_trampoline: state2 in the thread{}",
-            (*curr.locked_data().get()).state
-        );
+        // pr_debug!(
+        //     "kthread_trampoline: state2 in the thread{}",
+        //     (*curr.locked_data().get()).state
+        // );
     }
     let ret = map_kthread_self(kthread);
 
     unsafe {
-        pr_debug!(
-            "kthread_trampoline: state3 in the thread{}",
-            (*curr.locked_data().get()).state
-        );
+        // pr_debug!(
+        //     "kthread_trampoline: state3 in the thread{}",
+        //     (*curr.locked_data().get()).state
+        // );
     }
 
     match ret {
         Ok(_o) => {
-            // pr_debug!("bug n");
+            // // pr_debug!("bug n");
             if let Some(kfn) = kthread.kthread_fn.take() {
                 kfn();
             }
@@ -652,17 +652,17 @@ unsafe extern "C" fn kthread_trampoline(arg: *mut c_types::c_void) -> c_types::c
         Err(_e) => {}
     }
     unsafe {
-        pr_debug!(
-            "kthread_trampoline: state4 in the thread{}",
-            (*curr.locked_data().get()).state
-        );
+        // pr_debug!(
+        //     "kthread_trampoline: state4 in the thread{}",
+        //     (*curr.locked_data().get()).state
+        // );
     }
     rros_cancel_thread(kthread.thread.as_mut().unwrap().clone());
     0 as c_types::c_int
 }
 
 fn rros_cancel_thread(thread: Arc<SpinLock<RrosThread>>) {
-    pr_debug!(" in rros_cancel_thread");
+    // pr_debug!(" in rros_cancel_thread");
 
     let mut flags: c_types::c_ulong = 0;
     // Turn off interrupts.
@@ -670,10 +670,10 @@ fn rros_cancel_thread(thread: Arc<SpinLock<RrosThread>>) {
 
     let mut state = thread.lock().state;
     let info = thread.lock().info;
-    pr_debug!("state is {:?}", thread.lock().state);
+    // pr_debug!("state is {:?}", thread.lock().state);
 
     if state & T_ZOMBIE != 0x0 {
-        pr_debug!("thread->state: T_ZOMBIE");
+        // pr_debug!("thread->state: T_ZOMBIE");
         let _ret = rros_put_thread_rq(Some(thread.clone()), rq, flags);
         return;
     }
@@ -699,11 +699,11 @@ fn rros_cancel_thread(thread: Arc<SpinLock<RrosThread>>) {
     let curr = unsafe { (*rq).get_curr() };
     let curr_addr = curr.locked_data().get();
     let thread_addr = thread.locked_data().get();
-    pr_debug!("curr_addr is {:?}", curr_addr);
-    pr_debug!("thread_addr is {:?}", thread_addr);
+    // pr_debug!("curr_addr is {:?}", curr_addr);
+    // pr_debug!("thread_addr is {:?}", thread_addr);
 
     if curr_addr == thread_addr {
-        pr_debug!("rros_current() == thread");
+        // pr_debug!("rros_current() == thread");
         rros_test_cancel();
         return;
     }
@@ -713,7 +713,7 @@ fn rros_cancel_thread(thread: Arc<SpinLock<RrosThread>>) {
         //rros_demote_thread(thread);
         // rros_signal_thread(thread, SIGTERM, 0);
     } else {
-        pr_debug!("rros_kick_thread: no");
+        // pr_debug!("rros_kick_thread: no");
         //rros_kick_thread(thread, 0);
     }
     unsafe {
@@ -727,7 +727,7 @@ pub fn rros_test_cancel() {
         let curr = unsafe { &mut *curr_ptr };
         let info = unsafe { (*curr.locked_data().get()).info };
         if info & T_CANCELD != 0x0 {
-            pr_debug!("rros_test_cancel: yes");
+            // pr_debug!("rros_test_cancel: yes");
             __rros_test_cancel(curr);
         }
     }
@@ -742,7 +742,7 @@ fn __rros_test_cancel(curr_ptr: *mut SpinLock<RrosThread>) {
     }
     let state = unsafe { (*curr.locked_data().get()).state };
     if state & T_INBAND == 0x0 {
-        pr_debug!("__rros_test_cancel:!(curr->state & T_INBAND)");
+        // pr_debug!("__rros_test_cancel:!(curr->state & T_INBAND)");
         rros_switch_inband(RROS_HMDIAG_NONE as i32);
     }
     kernelh::do_exit(kernelh::ThreadExitCode::Successfully);
@@ -777,29 +777,29 @@ pub fn pin_to_initial_cpu(thread: Arc<SpinLock<RrosThread>>) {
 fn map_kthread_self(kthread: &mut RrosKthread) -> Result<usize> {
     let thread = kthread.thread.clone().unwrap();
 
-    pr_debug!("map_kthread_self:in");
+    // pr_debug!("map_kthread_self:in");
 
     // TODO: add the support of the pin_to_initial_cpu
     pin_to_initial_cpu(thread.clone());
 
     let ret;
     unsafe {
-        pr_debug!(
-            "map_kthread_self: the altched add is {:p}",
-            &mut (*thread.locked_data().get()).altsched
-        );
+        // pr_debug!(
+        //     "map_kthread_self: the altched add is {:p}",
+        //     &mut (*thread.locked_data().get()).altsched
+        // );
         (*thread.locked_data().get())
             .altsched
             .dovetail_init_altsched();
-        pr_debug!("map_kthread_self: after dovetail_init_altsched");
+        // pr_debug!("map_kthread_self: after dovetail_init_altsched");
 
         set_oob_threadinfo(
             Arc::into_raw(thread.clone()) as *mut SpinLock<RrosThread> as *mut c_types::c_void
         );
-        pr_debug!(
-            "map_kthread_self rros_current address is {:p}",
-            rros_current()
-        );
+        // pr_debug!(
+        //     "map_kthread_self rros_current address is {:p}",
+        //     rros_current()
+        // );
         dovetail::dovetail_start_altsched();
 
         rros_release_thread(thread.clone(), T_DORMANT as u32, 0 as u32);
@@ -809,7 +809,7 @@ fn map_kthread_self(kthread: &mut RrosKthread) -> Result<usize> {
         if let Err(_e) = ret {
             kthread.status = -1;
         }
-        pr_debug!("map_kthread_self: after rros_switch_oob");
+        // pr_debug!("map_kthread_self: after rros_switch_oob");
         //b kernel/rros/thread.rs:531
         kthread.irq_work.init_irq_work(wakeup_kthread_parent)?;
         kthread.irq_work.irq_work_queue()?;
@@ -834,18 +834,18 @@ pub fn rros_current() -> *mut SpinLock<RrosThread> {
 pub fn rros_switch_oob() -> Result<usize> {
     // fn rros_switch_oob(kthread: &mut RrosKthread) -> Result<usize> {
     let _res = premmpt::running_inband()?;
-    // pr_debug!("res premmpt {:?}" , res);
+    // // pr_debug!("res premmpt {:?}" , res);
     // struct RrosThread *curr = rros_current();
 
     // let prio = kthread.thread.as_mut().unwrap().lock().cprio;
 
-    pr_debug!("rros_switch_oob: 1");
+    // pr_debug!("rros_switch_oob: 1");
     let _curr = unsafe { &mut *rros_current() };
-    // pr_debug!("curr state {}" , curr.lock().state);
-    // pr_debug!("kthread state {}" , kthread.thread.as_mut().unwrap().lock().state);
+    // // pr_debug!("curr state {}" , curr.lock().state);
+    // // pr_debug!("kthread state {}" , kthread.thread.as_mut().unwrap().lock().state);
 
     // let prio = kthread.thread.as_mut().unwrap().lock().cprio;
-    pr_debug!("rros_switch_oob: 2");
+    // pr_debug!("rros_switch_oob: 2");
 
     // struct task_struct *p = current;
     // unsigned long flags;
@@ -857,12 +857,12 @@ pub fn rros_switch_oob() -> Result<usize> {
     // 	return -EPERM;
 
     if Task::current().signal_pending() {
-        // pr_debug!("wrong!!!!!!!!!!!!!!!!!!!");
+        // // pr_debug!("wrong!!!!!!!!!!!!!!!!!!!");
         return Err(kernel::Error::ERESTARTSYS);
     }
 
     // let prio = kthread.thread.as_mut().unwrap().lock().cprio;
-    // pr_debug!("mutex 3.25");
+    // // pr_debug!("mutex 3.25");
 
     // if (signal_pending(p))
     // 	return -ERESTARTSYS;
@@ -873,7 +873,7 @@ pub fn rros_switch_oob() -> Result<usize> {
     // rros_clear_sync_uwindow(curr, T_INBAND);
 
     let ret = dovetail::dovetail_leave_inband();
-    // pr_debug!("2dddddddddddddddddddddddddddddddddddddddddddeee ");
+    // // pr_debug!("2dddddddddddddddddddddddddddddddddddddddddddeee ");
     if ret != 0x0 {
         rros_test_cancel();
         // 	rros_set_sync_uwindow(curr, T_INBAND);
@@ -889,7 +889,7 @@ pub fn rros_switch_oob() -> Result<usize> {
         rust_helper_unstall_oob();
     }
     // let prio = kthread.thread.as_mut().unwrap().lock().cprio;
-    // pr_debug!("mutex 3.4");
+    // // pr_debug!("mutex 3.4");
 
     // /*
     //  * The current task is now running on the out-of-band
@@ -943,7 +943,7 @@ pub fn rros_switch_oob() -> Result<usize> {
     // }
 
     if Task::current().signal_pending() {
-        // pr_debug!("wrong!!!!!!!!!!!!!!!!!!!");
+        // // pr_debug!("wrong!!!!!!!!!!!!!!!!!!!");
         return Err(kernel::Error::ERESTARTSYS);
     }
 
@@ -1043,15 +1043,15 @@ fn rros_hold_thread(kthread: &mut RrosKthread, mask: u32) {
 }
 
 pub fn set_oob_threadinfo(curr: *mut c_types::c_void) {
-    // pr_debug!("oob thread info {:p}", curr);
+    // // pr_debug!("oob thread info {:p}", curr);
     // unsafe{(*Task::current_ptr()).thread_info.oob_state.thread = curr }
-    pr_debug!("set_oob_threadinfo: in");
+    // pr_debug!("set_oob_threadinfo: in");
     dovetail::dovetail_current_state().set_thread(curr);
     // unsafe{Arc::decrement_strong_count(curr);}
 }
 
 pub fn set_oob_mminfo(thread: Arc<SpinLock<RrosThread>>) {
-    // pr_debug!("set_oob_mminfo: in");
+    // // pr_debug!("set_oob_mminfo: in");
     unsafe {
         (*thread.locked_data().get()).oob_mm = dovetail::dovetail_mm_state();
     }
@@ -1099,14 +1099,14 @@ pub fn rros_run_kthread(kthread: &mut RrosKthread, fmt: &'static CStr) -> Result
         // Completion::init_completion(&mut kthread.borrow_mut().done);
 
         // kthread.borrow_mut().thread.clone().unwrap().lock().state |= sched::T_READY;
-        // pr_debug!("fkkkkk {}", kthread.thread.clone().unwrap().lock().state);
+        // // pr_debug!("fkkkkk {}", kthread.thread.clone().unwrap().lock().state);
 
         let thread_unwrap = kthread.thread.clone().unwrap();
-        pr_debug!("here 2");
+        // pr_debug!("here 2");
         rros_init_thread(&Some(thread_unwrap), iattr, this_rros_rq(), fmt)?;
         let _next_add = kthread.thread.clone().unwrap().lock().deref_mut() as *mut RrosThread;
-        // pr_debug!("the run thread add is  next_add {:p}", next_add);
-        // pr_debug!("fkkkkk 176 128 32 16 {}", kthread.thread.clone().unwrap().lock().state);
+        // // pr_debug!("the run thread add is  next_add {:p}", next_add);
+        // // pr_debug!("fkkkkk 176 128 32 16 {}", kthread.thread.clone().unwrap().lock().state);
         // kthread.thread.clone().unwrap().lock().rrperiod = 400000;
         // kthread.thread.clone().unwrap().lock().state |= T_RRB;
         // let rq = unsafe{(*this_rros_rq()).get_rrbtimer()};
@@ -1114,11 +1114,11 @@ pub fn rros_run_kthread(kthread: &mut RrosKthread, fmt: &'static CStr) -> Result
         // let interval = RROS_INFINITE;
         // rros_start_timer(rq, value, interval);
 
-        // pr_debug!("kkkkkk {}", kthread.thread.clone().unwrap().lock().state);
+        // // pr_debug!("kkkkkk {}", kthread.thread.clone().unwrap().lock().state);
 
         __rros_run_kthread(kthread, factory::RROS_CLONE_PUBLIC)?;
 
-        // pr_debug!("kkkkkk2 2224 2048 128 32 16 {}", kthread.borrow_mut().thread.clone().unwrap().lock().state);
+        // // pr_debug!("kkkkkk2 2224 2048 128 32 16 {}", kthread.borrow_mut().thread.clone().unwrap().lock().state);
     }
     Ok(0)
 }
@@ -1156,7 +1156,7 @@ pub fn rros_set_thread_schedparam_locked(
             match (*(*thread.locked_data().get()).wchan).reorder_wait {
                 Some(f) => func = f,
                 None => {
-                    pr_warn!("reorder_wait function error");
+                    // pr_warn!("reorder_wait function error");
                     return Err(kernel::Error::EINVAL);
                 }
             }
@@ -1226,7 +1226,7 @@ pub fn rros_sleep_on(
     let mut flags: c_types::c_ulong = 0;
     let curr = unsafe { &mut *rros_current() };
     let thread = unsafe { Arc::from_raw(curr as *const SpinLock<RrosThread>) };
-    // pr_debug!("rros_sleep_on: x ref is {}", Arc::strong_count(&thread.clone()));
+    // // pr_debug!("rros_sleep_on: x ref is {}", Arc::strong_count(&thread.clone()));
     unsafe {
         Arc::increment_strong_count(curr);
     }
@@ -1249,7 +1249,7 @@ pub fn rros_sleep_on_locked(
     let curr = unsafe { (*rq).get_curr() };
 
     let _next_add = curr.clone().lock().deref_mut() as *mut RrosThread;
-    // pr_debug!("the tram thread add {:p}", next_add);
+    // // pr_debug!("the tram thread add {:p}", next_add);
 
     // /* Sleeping while preemption is disabled is a bug. */
     // RROS_WARN_ON(CORE, rros_preempt_count() != 0);
@@ -1261,7 +1261,7 @@ pub fn rros_sleep_on_locked(
 
     let oldstate = curr.lock().state;
 
-    // pr_debug!("thread before0 sleep {}", oldstate);
+    // // pr_debug!("thread before0 sleep {}", oldstate);
     // /*
     //  * If a request to switch to in-band context is pending
     //  * (T_KICKED), raise T_BREAK then return immediately.
@@ -1282,7 +1282,7 @@ pub fn rros_sleep_on_locked(
     //  * !wchan + !timeout: periodic wait (T_WAIT)
     //  */
     // curr.lock().state |= sched::T_DELAY as u32;
-    // pr_debug!("thread before sleep {}", curr.lock().state);
+    // // pr_debug!("thread before sleep {}", curr.lock().state);
 
     if timeout_mode != timeout::RrosTmode::RrosRel || !timeout::timeout_infinite(timeout) {
         // timer::rros_prepare_timed_wait(curr.lock().rtimer, clock,
@@ -1297,7 +1297,7 @@ pub fn rros_sleep_on_locked(
         let timer = curr.lock().rtimer.as_ref().unwrap().clone();
         timer::rros_start_timer(timer.clone(), timeout, timeout::RROS_INFINITE);
         curr.lock().state |= T_DELAY as u32;
-        // pr_debug!("thread 2before sleep {}", curr.lock().state);
+        // // pr_debug!("thread 2before sleep {}", curr.lock().state);
     } else if wchan == 0 as *mut RrosWaitChannel {
         // rros_prepare_timed_wait(&curr->ptimer, clock,rros_thread_rq(curr));
         curr.lock().state |= T_WAIT;
@@ -1339,7 +1339,7 @@ unsafe extern "C" fn rust_handle_inband_event(event: u32, _data: *mut c_types::c
         // 	handle_sigwake_event(data);
         // 	break;
         bindings::inband_event_type_INBAND_TASK_EXIT => {
-            // pr_debug!("{}",rust_helper_dovetail_current_state().subscriber);
+            // // pr_debug!("{}",rust_helper_dovetail_current_state().subscriber);
             // rros_drop_subscriptions(rros_get_subscriber()); // sbr in rros is NULL, comment here first.
             if rros_current() != 0 as *mut SpinLock<RrosThread> {
                 let _ret = put_current_thread();
@@ -1363,7 +1363,7 @@ unsafe extern "C" fn rust_handle_inband_event(event: u32, _data: *mut c_types::c
         // 	handle_cleanup_event(data);
         // 	break;
         _ => {
-            pr_warn!("unknown inband event");
+            // pr_warn!("unknown inband event");
         }
     }
 }
@@ -1373,12 +1373,12 @@ fn put_current_thread() -> Result<usize> {
 
     let state = curr.lock().state;
     if state & T_USER != 0 {
-        pr_debug!("000000000000000000000000000000000000000000000000000000");
+        // pr_debug!("000000000000000000000000000000000000000000000000000000");
         // 	skip_ptsync(curr);
     }
     cleanup_current_thread()?;
     // rros_put_element(&curr->element);
-    // unsafe{pr_debug!("600 uninit_thread: x ref is {}", Arc::strong_count(UTHREAD.as_ref().unwrap()));}
+    // unsafe{// pr_debug!("600 uninit_thread: x ref is {}", Arc::strong_count(UTHREAD.as_ref().unwrap()));}
     unsafe {
         Arc::decrement_strong_count(curr);
     }
@@ -1389,29 +1389,29 @@ fn put_current_thread() -> Result<usize> {
 }
 
 fn cleanup_current_thread() -> Result<usize> {
-    // unsafe{pr_debug!("00 uninit_thread: x ref is {}", Arc::strong_count(&uthread.clone().unwrap()));}
+    // unsafe{// pr_debug!("00 uninit_thread: x ref is {}", Arc::strong_count(&uthread.clone().unwrap()));}
     let curr = rros_current();
     let thread = unsafe { Arc::from_raw(curr as *const SpinLock<RrosThread>) };
     unsafe {
         Arc::increment_strong_count(curr);
     }
-    // unsafe{pr_debug!("01 uninit_thread: x ref is {}", Arc::strong_count(&uthread.clone().unwrap()));}
+    // unsafe{// pr_debug!("01 uninit_thread: x ref is {}", Arc::strong_count(&uthread.clone().unwrap()));}
     // trace_rros_thread_unmap(curr);
     dovetail::dovetail_stop_altsched();
     do_cleanup_current(thread)?;
-    // unsafe{pr_debug!("02 uninit_thread: x ref is {}", Arc::strong_count(&uthread.clone().unwrap()));}
+    // unsafe{// pr_debug!("02 uninit_thread: x ref is {}", Arc::strong_count(&uthread.clone().unwrap()));}
 
     dovetail::dovetail_current_state().set_thread(0 as *mut c_types::c_void);
     // unsafe{Arc::decrement_strong_count(curr);}
-    // unsafe{pr_debug!("090 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
-    // unsafe{pr_debug!("60 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("090 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("60 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
     Ok(0)
 }
 
 fn do_cleanup_current(curr: Arc<SpinLock<RrosThread>>) -> Result<usize> {
     // fn do_cleanup_current(curr: &mut SpinLock<RrosThread>) -> Result<usize> {
     // struct cred *newcap;
-    // unsafe{pr_debug!("03 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("03 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
     let mut flags: c_types::c_ulong = 0;
     let rq: Option<*mut rros_rq>;
 
@@ -1426,7 +1426,7 @@ fn do_cleanup_current(curr: Arc<SpinLock<RrosThread>>) -> Result<usize> {
     // rros_unindex_factory_element(&curr->element);
     let state = curr.lock().state;
     if state & T_USER != 0 {
-        pr_debug!("000000000000000000000000000000000000000000000000000000");
+        // pr_debug!("000000000000000000000000000000000000000000000000000000");
         // 	rros_free_chunk(&RROS_SHARED_HEAP, curr->u_window);
         // 	curr->u_window = NULL;
         // 	rros_drop_poll_table(curr);
@@ -1439,18 +1439,18 @@ fn do_cleanup_current(curr: Arc<SpinLock<RrosThread>>) -> Result<usize> {
         // 	}
     }
 
-    pr_debug!("before dequeue_old_thread");
+    // pr_debug!("before dequeue_old_thread");
     // dequeue_old_thread(curr);
-    pr_debug!("after dequeue_old_thread,before rros_get_thread_rq");
+    // pr_debug!("after dequeue_old_thread,before rros_get_thread_rq");
     // let x = unsafe { Arc::from_raw(curr as *const SpinLock<RrosThread>) };
-    // unsafe{pr_debug!("b 6 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("b 6 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
     let x = curr.clone();
-    // unsafe{pr_debug!("c 6 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("c 6 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
     rq = rros_get_thread_rq(Some(x.clone()), &mut flags);
-    pr_debug!("after rros_get_thread_rq1111111111");
+    // pr_debug!("after rros_get_thread_rq1111111111");
     let state = curr.lock().state;
     if state & T_READY != 0 {
-        pr_debug!("before rros_dequeue_thread in thread.rs");
+        // pr_debug!("before rros_dequeue_thread in thread.rs");
         // RROS_WARN_ON(CORE, (curr->state & RROS_THREAD_BLOCK_BITS));
         // unsafe { rros_dequeue_thread(Arc::from_raw(curr as *const SpinLock<RrosThread>)) };
         rros_dequeue_thread(x.clone())?;
@@ -1458,12 +1458,12 @@ fn do_cleanup_current(curr: Arc<SpinLock<RrosThread>>) -> Result<usize> {
     }
 
     (*curr).lock().state |= T_ZOMBIE;
-    pr_debug!("before uninit_thread");
+    // pr_debug!("before uninit_thread");
     rros_put_thread_rq(Some(x.clone()), rq, flags)?;
-    // unsafe{pr_debug!("a 6 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("a 6 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
     uninit_thread(curr.clone());
-    // unsafe{pr_debug!("9090 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
-    pr_debug!("after uninit_thread");
+    // unsafe{// pr_debug!("9090 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // pr_debug!("after uninit_thread");
     Ok(0)
 }
 
@@ -1481,32 +1481,32 @@ fn dequeue_old_thread(_thread: Arc<SpinLock<RrosThread>>) -> Result<usize> {
 }
 
 fn uninit_thread(thread: Arc<SpinLock<RrosThread>>) {
-    pr_debug!("the thread address is {:p}", thread);
-    // pr_debug!("the UTHREAD address is {:p}", UTHREAD.clone().unwrap());
-    // unsafe{pr_debug!("d 6 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // pr_debug!("the thread address is {:p}", thread);
+    // // pr_debug!("the UTHREAD address is {:p}", UTHREAD.clone().unwrap());
+    // unsafe{// pr_debug!("d 6 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
     let mut flags: c_types::c_ulong = 0;
     let rq: Option<*mut rros_rq>;
     let rtimer = thread.lock().rtimer.clone();
     let ptimer = thread.lock().ptimer.clone();
-    // unsafe{pr_debug!("7 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("7 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
     timer::rros_destroy_timer(rtimer.clone().unwrap());
-    // unsafe{pr_debug!("8 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("8 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
     // thread.lock().rtimer = None;
     rtimer.as_ref().unwrap().lock().thread = None;
     timer::rros_destroy_timer(ptimer.unwrap());
-    // unsafe{pr_debug!("9 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("9 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
     // let x = unsafe { Arc::from_raw(thread as *const SpinLock<RrosThread>) };
     let x = thread.clone();
-    // unsafe{pr_debug!("10 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("10 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
     rq = rros_get_thread_rq(Some(x.clone()), &mut flags);
-    // unsafe{pr_debug!("11 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
-    pr_debug!("uninit_thread: x ref is {}", Arc::strong_count(&x.clone()));
-    // unsafe{pr_debug!("12 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("11 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // pr_debug!("uninit_thread: x ref is {}", Arc::strong_count(&x.clone()));
+    // unsafe{// pr_debug!("12 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
     // unsafe { rros_forget_thread(Arc::from_raw(thread as *const SpinLock<RrosThread>)) };
     let _ret = rros_forget_thread(x.clone());
-    // unsafe{pr_debug!("13 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("13 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
     let _ret = rros_put_thread_rq(Some(x.clone()), rq, flags);
-    // unsafe{pr_debug!("14 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("14 uninit_thread: x ref is {}", Arc::strong_count(&UTHREAD.clone().unwrap()));}
 
     // let name = thread.lock().name as *const c_types::c_void;
     // bindings::kfree(name);
@@ -1540,7 +1540,7 @@ fn thread_factory_build(
     // 	int ret;
 
     if rros_current() != 0 as *mut SpinLock<RrosThread> {
-        pr_warn!("this condition should not be met!!!!!!!!!");
+        // pr_warn!("this condition should not be met!!!!!!!!!");
         // return Err(Error::EBUSY);
     }
 
@@ -1548,7 +1548,7 @@ fn thread_factory_build(
     // 		return ERR_PTR(-EBUSY);
 
     if clone_flags & !factory::RROS_THREAD_CLONE_FLAGS != 0 {
-        pr_warn!("I'm in this function this condition should not be met!!!!!!!!!");
+        // pr_warn!("I'm in this function this condition should not be met!!!!!!!!!");
         // return Err(Error::EINVAL);
     }
     // 	if (clone_flags & ~RROS_THREAD_CLONE_FLAGS)
@@ -1570,12 +1570,12 @@ fn thread_factory_build(
     unsafe {
         // KTHREAD_RUNNER_1 = Some(KthreadRunner::new(kfn_1));
         let mut thread = SpinLock::new(RrosThread::new().unwrap());
-        pr_debug!("at the thread build thread address is {:p} ", &thread);
-        let pinned = Pin::new_unchecked(&mut thread);
         // pr_debug!("at the thread build thread address is {:p} ", &thread);
+        let pinned = Pin::new_unchecked(&mut thread);
+        // // pr_debug!("at the thread build thread address is {:p} ", &thread);
         spinlock_init!(pinned, "test_threads1");
         curr = Arc::try_new(thread).unwrap();
-        // pr_debug!("at the thread build thread address is {:p} ", &thread);
+        // // pr_debug!("at the thread build thread address is {:p} ", &thread);
 
         let mut r = SpinLock::new(timer::RrosTimer::new(1));
         let pinned_r = Pin::new_unchecked(&mut r);
@@ -1588,22 +1588,22 @@ fn thread_factory_build(
         curr.lock().rtimer = Some(Arc::try_new(r).unwrap());
         curr.lock().ptimer = Some(Arc::try_new(p).unwrap());
     }
-    pr_debug!("at the thread build curr is {:p} ", curr);
+    // pr_debug!("at the thread build curr is {:p} ", curr);
     unsafe {
         UTHREAD = Some(curr.clone());
     }
-    pr_debug!("at the thread build curr is {:p} ", curr);
+    // pr_debug!("at the thread build curr is {:p} ", curr);
     unsafe {
-        pr_debug!(
-            "at the thread build curr is {:p} ",
-            UTHREAD.as_ref().unwrap()
-        )
+        // pr_debug!(
+        //     "at the thread build curr is {:p} ",
+        //     UTHREAD.as_ref().unwrap()
+        // )
     };
     unsafe {
-        pr_debug!(
-            "at the thread build curr is {:p} ",
-            UTHREAD.clone().unwrap()
-        )
+        // pr_debug!(
+        //     "at the thread build curr is {:p} ",
+        //     UTHREAD.clone().unwrap()
+        // )
     };
     // 	curr = kzalloc(sizeof(*curr), GFP_KERNEL);
     // 	if (curr == NULL)
@@ -1621,10 +1621,10 @@ fn thread_factory_build(
     // 	iattr.flags = T_USER;
 
     if clone_flags & factory::RROS_CLONE_OBSERVABLE != 0 {
-        pr_warn!("This should not happen for now!!!!!!!")
+        // pr_warn!("This should not happen for now!!!!!!!")
         // observalbe = RrosObservable::new().unwrap();
     } else if clone_flags & factory::RROS_CLONE_MASTER != 0 {
-        pr_warn!("This should not happen for now!!!!!!!")
+        // pr_warn!("This should not happen for now!!!!!!!")
         // observalbe = RrosObservable::new().unwrap();
     }
     // 	if (clone_flags & RROS_CLONE_OBSERVABLE) {
@@ -1673,17 +1673,17 @@ fn thread_factory_build(
     // 	iattr.sched_param.weak.prio = 0;
     // TODO: update the rq parameter
     unsafe {
-        pr_debug!(
-            "2 uninit_thread: x ref is {}",
-            Arc::strong_count(&UTHREAD.clone().unwrap())
-        );
+        // pr_debug!(
+        //     "2 uninit_thread: x ref is {}",
+        //     Arc::strong_count(&UTHREAD.clone().unwrap())
+        // );
     }
     let _ret = rros_init_thread(&Some(curr.clone()), iattr, this_rros_rq(), uname);
     unsafe {
-        pr_debug!(
-            "uninit_thread: x ref is {}",
-            Arc::strong_count(&UTHREAD.clone().unwrap())
-        );
+        // pr_debug!(
+        //     "uninit_thread: x ref is {}",
+        //     Arc::strong_count(&UTHREAD.clone().unwrap())
+        // );
     }
     // 	ret = rros_init_thread(curr, &iattr, NULL, "%s",
     // 			rros_element_name(&curr->element));
@@ -1692,10 +1692,10 @@ fn thread_factory_build(
 
     map_uthread_self(curr.clone()).unwrap();
     unsafe {
-        pr_debug!(
-            "3 uninit_thread: x ref is {}",
-            Arc::strong_count(&UTHREAD.clone().unwrap())
-        );
+        // pr_debug!(
+        //     "3 uninit_thread: x ref is {}",
+        //     Arc::strong_count(&UTHREAD.clone().unwrap())
+        // );
     }
     // 	ret = map_uthread_self(curr);
     // 	if (ret)
@@ -1862,27 +1862,27 @@ fn map_uthread_self(thread: Arc<SpinLock<RrosThread>>) -> Result<usize> {
     }
     // 	dovetail_init_altsched(&thread->altsched);
     unsafe {
-        pr_debug!(
-            "new_1 uninit_thread: x ref is {}",
-            Arc::strong_count(&UTHREAD.clone().unwrap())
-        );
+        // pr_debug!(
+        //     "new_1 uninit_thread: x ref is {}",
+        //     Arc::strong_count(&UTHREAD.clone().unwrap())
+        // );
     }
     set_oob_threadinfo(
         Arc::into_raw(thread.clone()) as *mut SpinLock<RrosThread> as *mut c_types::c_void
     );
 
     unsafe {
-        pr_debug!(
-            "new_2 uninit_thread: x ref is {}",
-            Arc::strong_count(&UTHREAD.clone().unwrap())
-        );
+        // pr_debug!(
+        //     "new_2 uninit_thread: x ref is {}",
+        //     Arc::strong_count(&UTHREAD.clone().unwrap())
+        // );
     }
     // Arc::into_raw(thread.clone()) as *mut SpinLock<RrosThread> as *mut c_types::c_void;
     unsafe {
-        pr_debug!(
-            "new_3 uninit_thread: x ref is {}",
-            Arc::strong_count(&UTHREAD.clone().unwrap())
-        );
+        // pr_debug!(
+        //     "new_3 uninit_thread: x ref is {}",
+        //     Arc::strong_count(&UTHREAD.clone().unwrap())
+        // );
     }
     // 	set_oob_threadinfo(thread);
     set_oob_mminfo(thread.clone());
@@ -2331,7 +2331,7 @@ pub fn __get_sched_attrs(
             f(thread_option.clone(), param.clone());
         }
         None => {
-            pr_debug!("__get_sched_attrs sched_getparam is none");
+            // pr_debug!("__get_sched_attrs sched_getparam is none");
         }
     }
     if sched_class.unwrap().flag == 3 {
@@ -2622,7 +2622,7 @@ pub fn rros_wait_period() -> Result<usize> {
     let overruns = rros_get_timer_overruns(timer.clone())?;
     // overruns = rros_get_timer_overruns(&curr->ptimer);
     if overruns != 0 {
-        pr_debug!("the overruns is not zero\n")
+        // pr_debug!("the overruns is not zero\n")
     }
     Ok(0)
     // 	if (overruns) {
@@ -2659,7 +2659,7 @@ fn rros_get_timer_overruns(timer: Arc<SpinLock<timer::RrosTimer>>) -> Result<u32
 
     let interval = unsafe { (*timer.locked_data().get()).interval };
     if delta < interval {
-        pr_debug!("rros_get_timer_overruns: delta < interval this should not happen\n");
+        // pr_debug!("rros_get_timer_overruns: delta < interval this should not happen\n");
         let pexpect_ticks = unsafe { (*timer.locked_data().get()).get_pexpect_ticks() + 1 };
         unsafe {
             (*timer.locked_data().get()).set_pexpect_ticks(pexpect_ticks);
@@ -2695,7 +2695,7 @@ fn rros_get_timer_overruns(timer: Arc<SpinLock<timer::RrosTimer>>) -> Result<u32
     // 	timer->pexpect_ticks += overruns;
 
     if unsafe { (*timer.locked_data().get()).get_status() } & timer::RROS_TIMER_RUNNING != 0 {
-        pr_warn!("rros_get_timer_overruns: timer is running. this should not happend \n");
+        // pr_warn!("rros_get_timer_overruns: timer is running. this should not happend \n");
         let pexpect_ticks = unsafe { (*timer.locked_data().get()).get_pexpect_ticks() + 1 };
         unsafe {
             (*timer.locked_data().get()).set_pexpect_ticks(pexpect_ticks);
@@ -2719,10 +2719,10 @@ fn rros_get_timer_overruns(timer: Arc<SpinLock<timer::RrosTimer>>) -> Result<u32
 
         return Ok(overruns as u32);
     } else {
-        pr_debug!("rros_get_timer_overruns: timer is running \n");
+        // pr_debug!("rros_get_timer_overruns: timer is running \n");
     }
     // if rros_timer_is_running(timer.clone()) {
-    //     pr_debug!("rros_get_timer_overruns: timer is running. this should not happend \n");
+    //     // pr_debug!("rros_get_timer_overruns: timer is running. this should not happend \n");
     // }
     // 	if (!rros_timer_is_running(timer))
     // 		goto done;

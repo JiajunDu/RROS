@@ -83,7 +83,7 @@ fn rros_fifo_tick(rq: Option<*mut sched::rros_rq>) -> Result<usize> {
         match (*rq_ptr).curr.clone() {
             Some(c) => curr = Some(c.clone()),
             None => {
-                pr_warn!("err");
+                // // pr_warn!("err");
                 return Err(kernel::Error::EINVAL);
             }
         }
@@ -132,7 +132,7 @@ fn rros_fifo_show(
     unsafe {
         if (*thread).state & T_RRB != 0 {
             // return snprintf(buf, count, "%Ld\n",ktime_to_ns(thread->rrperiod));
-            pr_warn!("rros_fifo_show error!!");
+            // // pr_warn!("rros_fifo_show error!!");
             return Err(kernel::Error::EPERM);
         }
     }
@@ -153,7 +153,7 @@ fn __rros_set_fifo_schedparam(
     if state & T_BOOST == 0 {
         thread_unwrap.lock().state &= !T_WEAK;
     }
-    pr_debug!("thread before calling {}", state);
+    // pr_debug!("thread before calling {}", state);
     ret
 }
 
@@ -231,7 +231,7 @@ pub fn __rros_enqueue_fifo_thread(thread: Arc<SpinLock<sched::RrosThread>>) -> R
     if q.is_empty() {
         q.add_head(thread.clone());
         thread.lock().rq_next = q.head.prev.clone();
-        // pr_debug!("addr: {:p}", thread.lock().rq_next.clone().as_mut().unwrap());
+        // // pr_debug!("addr: {:p}", thread.lock().rq_next.clone().as_mut().unwrap());
     } else {
         let mut p = q.head.prev;
         // Traverse in reverse order.
@@ -272,7 +272,7 @@ pub fn __rros_requeue_fifo_thread(thread: Arc<SpinLock<sched::RrosThread>>) -> R
             q.add_head(thread.clone());
             // (*thread.locked_data().get()).rq_next = Some(Node::new(q.head.prev.clone().unwrap().as_ref().value.clone()));
             (*thread.locked_data().get()).rq_next = q.head.prev;
-            // pr_debug!("addr: {:p}", (*thread.locked_data().get()).rq_next.clone().as_mut().unwrap());
+            // // pr_debug!("addr: {:p}", (*thread.locked_data().get()).rq_next.clone().as_mut().unwrap());
         } else {
             let mut p = q.head.prev;
             // Traverse in reverse order.

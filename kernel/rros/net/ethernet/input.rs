@@ -61,25 +61,25 @@ pub fn rros_net_ether_accept(skb: RrosSkBuff) -> bool {
         );
         (tag, test_bit)
     };
-    pr_debug!("tag:{},test_bit:{}\n", tag, test_bit);
+    // pr_debug!("tag:{},test_bit:{}\n", tag, test_bit);
     if tag && test_bit {
-        pr_debug!("tag && test_bit\n");
+        // pr_debug!("tag && test_bit\n");
         return pick(skb);
     }
     // TODO: The following path has not been tested.
     if skb.vlan_present() == 0 && unsafe { rust_helper_eth_type_vlan(be16::new(skb.protocol)) } {
-        pr_debug!("this path is not tested\n");
+        // pr_debug!("this path is not tested\n");
         let mac_hdr = unsafe { skb.head.offset(skb.mac_header as isize) as *mut u8 };
         let ehdr = mac_hdr as *mut VlanEthhdr;
-        pr_debug!("(*ehdr).h_vlan_encapsulated_proto {} ", unsafe {
-            (*ehdr).get_mut().h_vlan_encapsulated_proto
-        });
+        // pr_debug!("(*ehdr).h_vlan_encapsulated_proto {} ", unsafe {
+        //     (*ehdr).get_mut().h_vlan_encapsulated_proto
+        // });
         if be16::new(unsafe { (*ehdr).get().unwrap().h_vlan_encapsulated_proto })
             == be16::from(bindings::ETH_P_IP as u16)
         {
-            pr_debug!("handle the real packege\n");
+            // pr_debug!("handle the real packege\n");
             let vlan_tci = unsafe { u16::from(be16::new((*ehdr).get().unwrap().h_vlan_TCI)) };
-            pr_debug!("h_vlan_TCI {}\n", vlan_tci);
+            // pr_debug!("h_vlan_TCI {}\n", vlan_tci);
             if unsafe {
                 rust_helper_test_bit(
                     (vlan_tci & VLAN_VID_MASK as u16) as i32,
@@ -157,8 +157,8 @@ pub fn rros_show_vlans() {
         }
     }
     if overflow {
-        pr_info!("oob net port: {:?} ...(more)", buffer);
+        // pr_info!("oob net port: {:?} ...(more)", buffer);
     } else {
-        pr_info!("oob net port: {:?}", buffer);
+        // pr_info!("oob net port: {:?}", buffer);
     }
 }

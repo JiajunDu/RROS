@@ -30,7 +30,7 @@ fn traverse_list(head: &ListHead) -> i32 {
             }
         }
     }
-    //pr_debug!("list count is {}",count);
+    //// pr_debug!("list count is {}",count);
     return count;
 }
 
@@ -44,9 +44,9 @@ fn test_list_method() {
     head.add(&mut t1 as *mut ListHead);
     head.add(&mut t2 as *mut ListHead);
     if traverse_list(&head) == 3 {
-        pr_debug!("test_list_add success");
+        // pr_debug!("test_list_add success");
     } else {
-        pr_debug!("test_list_add failed");
+        // pr_debug!("test_list_add failed");
     }
 
     // Test list_drop.
@@ -55,16 +55,16 @@ fn test_list_method() {
     }
     //head.next = &mut t2 as *mut ListHead;
     if traverse_list(&head) == 2 {
-        pr_debug!("test_list_drop success");
+        // pr_debug!("test_list_drop success");
     } else {
-        pr_debug!("test_list_drop failed");
+        // pr_debug!("test_list_drop failed");
     }
 
     // Test last_is.
     if head.last_is(&mut t1 as *mut ListHead) {
-        pr_debug!("test_list_last_is success");
+        // pr_debug!("test_list_last_is success");
     } else {
-        pr_debug!("test_list_last_is failed");
+        // pr_debug!("test_list_last_is failed");
     }
 
     unsafe {
@@ -73,9 +73,9 @@ fn test_list_method() {
 
     // Test empty.
     if head.is_empty() {
-        pr_debug!("test_list_is_empty success");
+        // pr_debug!("test_list_is_empty success");
     } else {
-        pr_debug!("test_list_is_empty failed");
+        // pr_debug!("test_list_is_empty failed");
     }
 }
 
@@ -89,25 +89,25 @@ pub fn test_entry() {
     let _t1 = list_entry!(&mut t1.head as *mut ListHead, ListTest, head);
     unsafe {
         if (*_t1).num == t1.num {
-            pr_debug!("test_list_entry success!");
+            // pr_debug!("test_list_entry success!");
         } else {
-            pr_debug!("test_list_entry failed!");
+            // pr_debug!("test_list_entry failed!");
         }
     }
     let _t2 = list_first_entry!(t1.head.next, ListTest, head);
     unsafe {
         if (*_t2).num == t2.num {
-            pr_debug!("test_list_first_entry success!");
+            // pr_debug!("test_list_first_entry success!");
         } else {
-            pr_debug!("test_list_first_entry failed!");
+            // pr_debug!("test_list_first_entry failed!");
         }
     }
     let _t3 = list_last_entry!(t1.head.prev, ListTest, head);
     unsafe {
         if (*_t3).num == t3.num {
-            pr_debug!("test_list_last_entry success!");
+            // pr_debug!("test_list_last_entry success!");
         } else {
-            pr_debug!("test_list_last_entry failed!");
+            // pr_debug!("test_list_last_entry failed!");
         }
     }
 }

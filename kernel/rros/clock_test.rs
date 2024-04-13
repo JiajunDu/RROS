@@ -4,7 +4,7 @@ use kernel::{ktime::*, prelude::*, spinlock_init, sync::SpinLock};
 
 #[allow(dead_code)]
 pub fn test_do_clock_tick() -> Result<usize> {
-    pr_debug!("~~~test_do_clock_tick begin~~~");
+    // pr_debug!("~~~test_do_clock_tick begin~~~");
     unsafe {
         let tmb = rros_percpu_timers(&RROS_MONO_CLOCK, 0);
         let mut a = SpinLock::new(RrosTimer::new(580000000));
@@ -20,17 +20,17 @@ pub fn test_do_clock_tick() -> Result<usize> {
 
         (*tmb).q.add_head(xx.clone());
 
-        pr_debug!("before do_clock_tick");
+        // pr_debug!("before do_clock_tick");
         do_clock_tick(&mut RROS_MONO_CLOCK, tmb);
-        pr_debug!("len of tmb is {}", (*tmb).q.len());
+        // pr_debug!("len of tmb is {}", (*tmb).q.len());
     }
-    pr_debug!("~~~test_do_clock_tick end~~~");
+    // pr_debug!("~~~test_do_clock_tick end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_adjust_timer() -> Result<usize> {
-    pr_debug!("~~~test_adjust_timer begin~~~");
+    // pr_debug!("~~~test_adjust_timer begin~~~");
     unsafe {
         let tmb = rros_percpu_timers(&RROS_MONO_CLOCK, 0);
         let mut a = SpinLock::new(RrosTimer::new(580000000));
@@ -46,17 +46,17 @@ pub fn test_adjust_timer() -> Result<usize> {
 
         // (*tmb).q.add_head(xx.clone());
 
-        pr_debug!("before adjust_timer");
+        // pr_debug!("before adjust_timer");
         adjust_timer(&RROS_MONO_CLOCK, xx.clone(), &mut (*tmb).q, 100);
-        pr_debug!("len of tmb is {}", (*tmb).q.len());
+        // pr_debug!("len of tmb is {}", (*tmb).q.len());
     }
-    pr_debug!("~~~test_adjust_timer end~~~");
+    // pr_debug!("~~~test_adjust_timer end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_rros_adjust_timers() -> Result<usize> {
-    pr_debug!("~~~test_rros_adjust_timers begin~~~");
+    // pr_debug!("~~~test_rros_adjust_timers begin~~~");
     unsafe {
         let tmb = rros_percpu_timers(&RROS_MONO_CLOCK, 0);
         let mut a = SpinLock::new(RrosTimer::new(580000000));
@@ -71,13 +71,13 @@ pub fn test_rros_adjust_timers() -> Result<usize> {
         let yy = Arc::try_new(b)?;
 
         let add1 = &mut xx.lock().start_date as *mut KtimeT;
-        pr_debug!("add1 is {:p}", add1);
+        // pr_debug!("add1 is {:p}", add1);
 
         let interval_add = &mut xx.lock().interval as *mut KtimeT;
-        pr_debug!("add interval is {:p}", interval_add);
+        // pr_debug!("add interval is {:p}", interval_add);
 
         let add2 = &mut xx.lock().start_date as *mut KtimeT;
-        pr_debug!("add2 is {:p}", add2);
+        // pr_debug!("add2 is {:p}", add2);
 
         // xx.lock().add_status(RROS_TIMER_FIRED);
         xx.lock().add_status(RROS_TIMER_PERIODIC);
@@ -91,17 +91,17 @@ pub fn test_rros_adjust_timers() -> Result<usize> {
         (*tmb).q.add_head(xx.clone());
         (*tmb).q.add_head(yy.clone());
 
-        pr_debug!("before adjust_timer");
+        // pr_debug!("before adjust_timer");
         rros_adjust_timers(&mut RROS_MONO_CLOCK, 100);
-        pr_debug!("len of tmb is {}", (*tmb).q.len());
+        // pr_debug!("len of tmb is {}", (*tmb).q.len());
     }
-    pr_debug!("~~~test_rros_adjust_timers end~~~");
+    // pr_debug!("~~~test_rros_adjust_timers end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_rros_stop_timers() -> Result<usize> {
-    pr_debug!("~~~test_rros_stop_timers begin~~~");
+    // pr_debug!("~~~test_rros_stop_timers begin~~~");
     unsafe {
         let tmb = rros_percpu_timers(&RROS_MONO_CLOCK, 0);
         let mut a = SpinLock::new(RrosTimer::new(580000000));
@@ -130,10 +130,10 @@ pub fn test_rros_stop_timers() -> Result<usize> {
         (*tmb).q.add_head(xx.clone());
         (*tmb).q.add_head(yy.clone());
 
-        pr_debug!("before rros_adjust_timers");
+        // pr_debug!("before rros_adjust_timers");
         rros_stop_timers(&RROS_MONO_CLOCK);
-        pr_debug!("len of tmb is {}", (*tmb).q.len());
+        // pr_debug!("len of tmb is {}", (*tmb).q.len());
     }
-    pr_debug!("~~~test_rros_stop_timers end~~~");
+    // pr_debug!("~~~test_rros_stop_timers end~~~");
     Ok(0)
 }

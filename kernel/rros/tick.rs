@@ -45,7 +45,7 @@ pub struct RrosProxySetNextKtime;
 
 impl clockchips::ProxySetNextKtime for RrosProxySetNextKtime {
     fn proxy_set_next_ktime(expires: KtimeT, _arg1: clockchips::ClockEventDevice) -> i32 {
-        //pr_debug!("proxy_set_next_ktime: in");
+        //// pr_debug!("proxy_set_next_ktime: in");
         let delta = ktime_sub(expires, ktime_get());
         let flags = unsafe { rust_helper_hard_local_irq_save() };
 
@@ -61,7 +61,7 @@ impl clockchips::ProxySetNextKtime for RrosProxySetNextKtime {
             )
         };
         unsafe { rust_helper_hard_local_irq_restore(flags) };
-        // pr_debug!("proxy_set_next_ktime: end");
+        // // pr_debug!("proxy_set_next_ktime: end");
         return 0;
     }
 }
@@ -70,7 +70,7 @@ pub struct RrosProxySetOneShotStopped;
 
 impl clockchips::ProxySetOneshotStopped for RrosProxySetOneShotStopped {
     fn proxy_set_oneshot_stopped(dev: clockchips::ClockProxyDevice) -> c_types::c_int {
-        pr_debug!("proxy_set_oneshot_stopped: in");
+        // pr_debug!("proxy_set_oneshot_stopped: in");
         let flags = unsafe { rust_helper_hard_local_irq_save() };
         let rq = this_rros_rq();
         unsafe {
@@ -82,7 +82,7 @@ impl clockchips::ProxySetOneshotStopped for RrosProxySetOneShotStopped {
             }
         }
         unsafe { rust_helper_hard_local_irq_restore(flags) };
-        pr_debug!("proxy_set_oneshot_stopped: end");
+        // pr_debug!("proxy_set_oneshot_stopped: end");
         return 0;
     }
 }
@@ -93,7 +93,7 @@ pub struct RrosClockIpiHandler;
 #[cfg(CONFIG_SMP)]
 impl clockchips::ClockIpiHandler for RrosClockIpiHandler {
     fn clock_ipi_handler(_irq: c_types::c_int, _dev_id: *mut c_types::c_void) -> c_types::c_uint {
-        pr_debug!("god nn");
+        // pr_debug!("god nn");
         unsafe {
             clockchips::core_tick::<RrosCoreTick>(null_mut());
         }
@@ -115,13 +115,13 @@ pub fn rros_enable_tick() -> Result<usize> {
         if PROXY_DEVICE == null_mut() {
             return Err(kernel::Error::ENOMEM);
         }
-        pr_debug!("PROXY_DEVICE alloc success");
+        // pr_debug!("PROXY_DEVICE alloc success");
     }
 
-    pr_debug!("rros_enable_tick: in");
+    // pr_debug!("rros_enable_tick: in");
     #[cfg(CONFIG_SMP)]
     if cpumask::num_possible_cpus() > 1 {
-        pr_debug!("rros_enable_tick123");
+        // pr_debug!("rros_enable_tick123");
         let ret = unsafe {
             interrupt::__request_percpu_irq(
                 irq_get_timer_oob_ipi() as c_types::c_uint,
@@ -140,7 +140,7 @@ pub fn rros_enable_tick() -> Result<usize> {
     let _ret = tick::tick_install_proxy(Some(clockchips::setup_proxy::<RrosSetupProxy>), unsafe {
         RROS_OOB_CPUS.as_cpumas_ptr()
     });
-    pr_info!("enable tick success!");
+    // pr_info!("enable tick success!");
     // if (ret && IS_ENABLED(CONFIG_SMP) && num_possible_cpus() > 1) {
     // 	free_percpu_irq(TIMER_OOB_IPI, &rros_machine_cpudata);
     // 	return ret;
@@ -158,7 +158,7 @@ impl clockchips::SetupProxy for RrosSetupProxy {
         match clockchips::ClockEventDevice::from_proxy_device(dev.get_real_device()) {
             Ok(v) => _real_dev = v,
             Err(_e) => {
-                pr_warn!("1setup real ced new error!");
+                // pr_warn!("1setup real ced new error!");
                 return;
             }
         }
@@ -167,7 +167,7 @@ impl clockchips::SetupProxy for RrosSetupProxy {
         match clockchips::ClockEventDevice::from_proxy_device(dev.get_proxy_device()) {
             Ok(v) => proxy_dev = v,
             Err(_e) => {
-                pr_warn!("1setup proxy ced new error!");
+                // pr_warn!("1setup proxy ced new error!");
                 return;
             }
         }
@@ -205,7 +205,7 @@ pub fn rros_program_proxy_tick(clock: &RrosClock) {
     match clockchips::ClockProxyDevice::new(tmp_dev.get_ptr()) {
         Ok(v) => dev = v,
         Err(_e) => {
-            pr_warn!("cpd new error!");
+            // pr_warn!("cpd new error!");
             return;
         }
     }
@@ -214,7 +214,7 @@ pub fn rros_program_proxy_tick(clock: &RrosClock) {
     match clockchips::ClockEventDevice::from_proxy_device(dev.get_real_device()) {
         Ok(v) => real_dev = v,
         Err(_e) => {
-            pr_warn!("real ced new error!");
+            // pr_warn!("real ced new error!");
             return;
         }
     }
@@ -222,7 +222,7 @@ pub fn rros_program_proxy_tick(clock: &RrosClock) {
     match clockchips::ClockEventDevice::from_proxy_device(dev.get_proxy_device()) {
         Ok(v) => _proxy_device = v,
         Err(_e) => {
-            pr_warn!("proxy ced new error!");
+            // pr_warn!("proxy ced new error!");
             return;
         }
     }

@@ -127,10 +127,10 @@ impl RrosWaitQueue {
         let curr = unsafe { &mut *(*rros_current()).locked_data().get() };
 
         // assert!(self.lock) //TODO:
-        pr_debug!(
-            "before adding the wait list length is {}",
-            self.wchan.wait_list.len()
-        );
+        // pr_debug!(
+        //     "before adding the wait list length is {}",
+        //     self.wchan.wait_list.len()
+        // );
         if curr.state & T_WOLI != 0 && curr.inband_disable_count.atomic_read() > 0 {
             let _ret = rros_notify_thread(
                 curr as *const _ as *mut RrosThread,
@@ -167,10 +167,10 @@ impl RrosWaitQueue {
                 }
             }
         }
-        pr_debug!(
-            "after adding the wait list length is {}",
-            self.wchan.wait_list.len()
-        );
+        // pr_debug!(
+        //     "after adding the wait list length is {}",
+        //     self.wchan.wait_list.len()
+        // );
         rros_sleep_on(
             timeout,
             timeout_mode,
@@ -238,9 +238,9 @@ impl RrosWaitQueue {
             } else {
                 let mut bcast: u32;
                 loop {
-                    pr_debug!("I am in the wait timeout loop");
+                    // pr_debug!("I am in the wait timeout loop");
                     self.locked_add(timeout, time_mode);
-                    pr_debug!("I am in the wait timeout loop aftering adding the timeout");
+                    // pr_debug!("I am in the wait timeout loop aftering adding the timeout");
                     // unsafe{rust_helper_raw_spin_unlock_irqrestore(&mut self.lock as *const _ as *mut bindings::hard_spinlock_t, flags)};
                     self.lock.raw_spin_unlock_irqrestore(flags);
                     ret = self.wait_schedule();
@@ -328,5 +328,5 @@ pub fn wait_test() {
         }
         unsafe { rros_schedule() };
     }
-    pr_debug!("wait test done")
+    // pr_debug!("wait test done")
 }

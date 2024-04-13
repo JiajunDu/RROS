@@ -43,7 +43,7 @@ fn kthread_handler(ptr: *mut c_types::c_void) {
         //     break;
 
         for _i in 0..10 {
-            pr_debug!("I'm going to wait\n");
+            // pr_debug!("I'm going to wait\n");
             let res = thread::rros_wait_period();
             match res {
                 Ok(_) => (),
@@ -51,7 +51,7 @@ fn kthread_handler(ptr: *mut c_types::c_void) {
                     pr_err!("there is an error\n");
                 }
             }
-            pr_debug!("I'm in the loop\n");
+            // pr_debug!("I'm in the loop\n");
             // if (ret && ret != -ETIMEDOUT) {
             //     // done_sampling(&k_runner.runner, ret);
             //     rros_stop_kthread(&k_runner.kthread);
@@ -71,18 +71,18 @@ fn kthread_handler(ptr: *mut c_types::c_void) {
         break;
     }
 
-    pr_debug!(
-        "k_runner.2.state.min_latency: {}\n",
-        k_runner.2.state.min_latency
-    );
-    pr_debug!(
-        "k_runner.2.state.max_latency: {}\n",
-        k_runner.2.state.max_latency
-    );
-    pr_debug!(
-        "k_runner.2.state.avg_latency: {}\n",
-        k_runner.2.state.avg_latency
-    );
+    // pr_debug!(
+    //     "k_runner.2.state.min_latency: {}\n",
+    //     k_runner.2.state.min_latency
+    // );
+    // pr_debug!(
+    //     "k_runner.2.state.max_latency: {}\n",
+    //     k_runner.2.state.max_latency
+    // );
+    // pr_debug!(
+    //     "k_runner.2.state.avg_latency: {}\n",
+    //     k_runner.2.state.avg_latency
+    // );
     // 	for (;;) {
     // 		if (rros_kthread_should_stop())
     // 			break;
@@ -138,9 +138,9 @@ fn add_measurement_sample(runner: &mut KthreadRunner, timestamp: ktime::KtimeT) 
     let period = runner.2.period as i64;
     let mut state = &mut runner.2.state;
     let mut delta = ktime::ktime_to_ns(ktime::ktime_sub(timestamp, state.ideal as i64)) as u64;
-    pr_debug!("the delta is {}\n", delta);
-    pr_debug!("the offset is {}\n", timestamp);
-    pr_debug!("the ideal is {}\n", state.ideal);
+    // pr_debug!("the delta is {}\n", delta);
+    // pr_debug!("the offset is {}\n", timestamp);
+    // pr_debug!("the ideal is {}\n", state.ideal);
     let offset_delta = (delta - state.offset) as u64;
 
     if offset_delta < state.min_latency {
@@ -149,8 +149,8 @@ fn add_measurement_sample(runner: &mut KthreadRunner, timestamp: ktime::KtimeT) 
         state.max_latency = offset_delta;
     }
 
-    pr_debug!("the offset_delta is {}\n", offset_delta);
-    pr_debug!("the avg_latency is {}\n", state.avg_latency);
+    // pr_debug!("the offset_delta is {}\n", offset_delta);
+    // pr_debug!("the avg_latency is {}\n", state.avg_latency);
     state.avg_latency += offset_delta;
     state.ideal = ktime::ktime_add(state.ideal as i64, period) as u64;
     // else if offset_delta > state.allmax_lat {
@@ -183,13 +183,13 @@ fn add_measurement_sample(runner: &mut KthreadRunner, timestamp: ktime::KtimeT) 
 //             KTHREAD_RUNNER_1.run(c_str!("latmus_thread"));
 //         }
 
-//         pr_debug!("Hello world from latmus!\n");
+//         // pr_debug!("Hello world from latmus!\n");
 //         Ok(Rros)
 //     }
 // }
 
 // impl Drop for Rros {
 //     fn drop(&mut self) {
-//         pr_debug!("Bye world from latmus!\n");
+//         // pr_debug!("Bye world from latmus!\n");
 //     }
 // }

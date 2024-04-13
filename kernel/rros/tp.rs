@@ -206,7 +206,7 @@ pub fn tp_init(rq: *mut rros_rq) -> Result<usize> {
             RROS_TIMER_IGRAVITY,
         );
         // rros_set_timer_name(&tp->tf_timer, "[tp-tick]");
-        pr_info!("tp_init ok");
+        // pr_info!("tp_init ok");
         Ok(0)
     }
 }
@@ -286,24 +286,24 @@ pub fn tp_chkparam(
 
         let prio = (*p.locked_data().get()).tp.prio;
         let ptid = (*p.locked_data().get()).tp.ptid;
-        pr_debug!("in tp_chkparam,gps = {:p}", tp.gps);
-        pr_debug!("in tp_chkparam,prio = {}", prio);
-        pr_debug!("in tp_chkparam,ptid = {}", ptid);
+        // pr_debug!("in tp_chkparam,gps = {:p}", tp.gps);
+        // pr_debug!("in tp_chkparam,prio = {}", prio);
+        // pr_debug!("in tp_chkparam,ptid = {}", ptid);
         if tp.gps == 0 as *mut RrosTpSchedule
             || prio < RROS_TP_MIN_PRIO
             || prio > RROS_TP_MAX_PRIO
             || ptid < 0
             || ptid >= CONFIG_RROS_SCHED_TP_NR_PART
         {
-            pr_warn!("tp_chkparam error");
+            // pr_warn!("tp_chkparam error");
             return Err(kernel::Error::EINVAL);
         }
         // if tp.gps == 0 as *mut RrosTpSchedule{
-        //     pr_warn!("in tp_chkparam,tp.gps == 0 as *mut RrosTpSchedule");
+        //     // pr_warn!("in tp_chkparam,tp.gps == 0 as *mut RrosTpSchedule");
         //     return Err(kernel::Error::EINVAL);
         // }
     }
-    pr_info!("tp_chkparam success");
+    // pr_info!("tp_chkparam success");
     Ok(0)
 }
 
@@ -320,7 +320,7 @@ pub fn tp_declare(
         let tp_link = (*thread.locked_data().get()).tp_link.clone();
         (*rq).tp.threads = Some(List::new(Arc::try_new(SpinLock::new(RrosThread::new()?))?));
         if (*rq).tp.threads.clone().as_mut().unwrap().is_empty() {
-            pr_debug!("tp.threads is empty!");
+            // pr_debug!("tp.threads is empty!");
         }
         (*rq)
             .tp
@@ -330,7 +330,7 @@ pub fn tp_declare(
             .unwrap()
             .add_tail(tp_link.clone().as_mut().unwrap().value.clone());
     }
-    pr_info!("tp_declare success!");
+    // pr_info!("tp_declare success!");
     Ok(0)
 }
 
@@ -770,7 +770,7 @@ pub fn rros_timer_is_running(timer: *mut RrosTimer) -> bool {
 
 #[allow(dead_code)]
 pub fn test_tp() {
-    // pr_debug!("test_tp in ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    // // pr_debug!("test_tp in ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 }
 
 #[cfg(CONFIG_SMP)]

@@ -177,7 +177,7 @@ pub fn inherit_thread_priority(
         match (*wchan.locked_data().get()).reorder_wait {
             Some(f) => func = f,
             None => {
-                pr_warn!("inherit_thread_priority:reorder_wait function error");
+                // pr_warn!("inherit_thread_priority:reorder_wait function error");
                 return Err(kernel::Error::EINVAL);
             }
         }
@@ -220,7 +220,7 @@ pub fn adjust_boost(
             match (*wchan.locked_data().get()).reorder_wait {
                 Some(f) => func = f,
                 None => {
-                    pr_warn!("adjust_boost:reorder_wait function error");
+                    // pr_warn!("adjust_boost:reorder_wait function error");
                     return Err(kernel::Error::EINVAL);
                 }
             }
@@ -372,23 +372,23 @@ pub fn mutex_fast_ceil(handle: u32) -> u32 {
 pub fn set_current_owner_locked(mutex: *mut RrosMutex, owner: Arc<SpinLock<RrosThread>>) {
     // assert_hard_lock(&mutex->lock);
     ref_and_track_owner(mutex, owner.clone());
-    pr_debug!("1111111111111111111111111111111111111111111");
+    // pr_debug!("1111111111111111111111111111111111111111111");
     unsafe {
         if (*mutex).flags & RROS_MUTEX_PP as i32 != 0 {
-            pr_debug!("2222222222222222222222222222222222222");
+            // pr_debug!("2222222222222222222222222222222222222");
             ceil_owner_priority(mutex, owner.clone());
-            pr_debug!("333333333333333333333333333333333333333");
+            // pr_debug!("333333333333333333333333333333333333333");
         }
     }
 }
 
 pub fn set_current_owner(mutex: *mut RrosMutex, owner: Arc<SpinLock<RrosThread>>) -> Result<usize> {
-    pr_debug!("00000000000000000000000000000000000000");
+    // pr_debug!("00000000000000000000000000000000000000");
     let flags = lock::raw_spin_lock_irqsave();
-    pr_debug!("000000000000000.............555000000000000000000000.50.50.5");
+    // pr_debug!("000000000000000.............555000000000000000000000.50.50.5");
     set_current_owner_locked(mutex, owner.clone());
     lock::raw_spin_unlock_irqrestore(flags);
-    pr_debug!("99999999999999999999999999999999999999");
+    // pr_debug!("99999999999999999999999999999999999999");
     Ok(0)
 }
 
@@ -709,7 +709,7 @@ pub fn check_lock_chain(
             match (*wchan.clone().unwrap().locked_data().get()).follow_depend {
                 Some(f) => func = f,
                 None => {
-                    pr_warn!("check_lock_chain:follow_depend function error");
+                    // pr_warn!("check_lock_chain:follow_depend function error");
                     return Err(kernel::Error::EINVAL);
                 }
             }
@@ -736,7 +736,7 @@ pub fn rros_lock_mutex_timeout(
         premmpt::running_inband()?;
         // currh = fundle_of(curr);
         // trace_rros_mutex_lock(mutex);
-        pr_debug!(
+        // pr_debug!(
             "rros_lock_mutex_timeout rros_current address is {:p}",
             rros_current()
         );
@@ -749,8 +749,8 @@ pub fn rros_lock_mutex_timeout(
             if h == RROS_NO_HANDLE {
                 let temp = Arc::from_raw(rros_current() as *const SpinLock<RrosThread>);
                 let test = temp.clone();
-                pr_debug!("{:p}", test);
-                pr_debug!("-1-1-1-1-1-1-1-1-1-1-1-1--1-1-11-1-1-1-1-1-1");
+                // pr_debug!("{:p}", test);
+                // pr_debug!("-1-1-1-1-1-1-1-1-1-1-1-1--1-1-11-1-1-1-1-1-1");
                 set_current_owner(mutex, temp.clone());
 
                 disable_inband_switch(curr as *mut SpinLock<RrosThread> as *mut RrosThread);
@@ -795,7 +795,7 @@ pub fn rros_lock_mutex_timeout(
             if redo == 1 {
                 continue;
             }
-            pr_debug!("33333333333333333333333333333333");
+            // pr_debug!("33333333333333333333333333333333");
             // owner = rros_get_factory_element_by_fundle(&rros_thread_factory,rros_get_index(h),struct RrosThread);
             let owner_ptr =
                 Arc::into_raw(owner.clone()) as *mut SpinLock<RrosThread> as *mut RrosThread;
@@ -1273,7 +1273,7 @@ pub fn rros_follow_mutex_depend(
                 match (*depend.clone().unwrap().locked_data().get()).follow_depend {
                     Some(f) => func = f,
                     None => {
-                        pr_warn!("rros_follow_mutex_depend:follow_depend function error");
+                        // pr_warn!("rros_follow_mutex_depend:follow_depend function error");
                         return Err(kernel::Error::EINVAL);
                     }
                 }
@@ -1321,18 +1321,18 @@ pub fn rros_commit_mutex_ceiling(mutex: *mut RrosMutex) -> Result<i32> {
 }
 
 pub fn test_mutex() -> Result<i32> {
-    pr_debug!("mutex test in~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    pr_debug!("test_mutex rros_current address is {:p}", rros_current());
+    // pr_debug!("mutex test in~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    // pr_debug!("test_mutex rros_current address is {:p}", rros_current());
     let mut kmutex = RrosKMutex::new();
     let mut kmutex = &mut kmutex as *mut RrosKMutex;
     let mut mutex = RrosMutex::new();
     unsafe { (*kmutex).mutex = &mut mutex as *mut RrosMutex };
     rros_init_kmutex(kmutex);
-    pr_debug!("init ok~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    // pr_debug!("init ok~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     rros_lock_kmutex(kmutex);
-    pr_debug!("lock ok~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    // pr_debug!("lock ok~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     rros_unlock_kmutex(kmutex);
-    pr_debug!("unlock ok~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    // pr_debug!("unlock ok~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     Ok(0)
 }
 

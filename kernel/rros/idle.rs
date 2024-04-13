@@ -124,7 +124,7 @@ fn __rros_track_idle_priority(
     p: Option<Arc<SpinLock<sched::RrosSchedParam>>>,
 ) {
     if p.is_some() {
-        pr_warn!("Inheriting a priority-less class makes no sense.");
+        // // pr_warn!("Inheriting a priority-less class makes no sense.");
     } else {
         thread.unwrap().lock().cprio = RROS_IDLE_PRIO;
     }
@@ -135,5 +135,5 @@ fn rros_idle_ceilprio(thread: Arc<SpinLock<sched::RrosThread>>, prio: i32) {
 }
 
 fn __rros_ceil_idle_priority(_thread: Arc<SpinLock<sched::RrosThread>>, _prio: i32) {
-    pr_warn!("RROS_WARN_ON_ONCE(CORE, 1)");
+    // // pr_warn!("RROS_WARN_ON_ONCE(CORE, 1)");
 }

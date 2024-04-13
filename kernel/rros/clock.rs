@@ -366,7 +366,7 @@ pub fn rros_stop_timers(clock: &RrosClock) {
         let flags = unsafe { (*tmb).lock.irq_lock_noguard() };
         let tq = unsafe { &mut (*tmb).q };
         while !tq.is_empty() {
-            pr_debug!("rros_stop_timers: 213");
+            // pr_debug!("rros_stop_timers: 213");
             let timer = tq.get_head().unwrap().value.clone();
             rros_timer_deactivate(timer);
         }
@@ -1062,8 +1062,8 @@ pub fn do_clock_tick(clock: &mut RrosClock, tmb: *mut RrosTimerbase) {
                     rros_enqueue_timer(timer.clone(), tq);
                 }
 
-                pr_debug!("now is {}", now);
-                // pr_debug!("date is {}",timer.lock().get_date());
+                // pr_debug!("now is {}", now);
+                // // pr_debug!("date is {}",timer.lock().get_date());
             }
         }
     }
@@ -1078,10 +1078,10 @@ pub struct RrosCoreTick;
 
 impl clockchips::CoreTick for RrosCoreTick {
     fn core_tick(dummy: clockchips::ClockEventDevice) {
-        // pr_debug!("in rros_core_tick");
+        // // pr_debug!("in rros_core_tick");
         let this_rq = this_rros_rq();
         //	if (RROS_WARN_ON_ONCE(CORE, !is_rros_cpu(rros_rq_cpu(this_rq))))
-        // pr_info!("in rros_core_tick");
+        // // pr_info!("in rros_core_tick");
         unsafe {
             do_clock_tick(&mut RROS_MONO_CLOCK, rros_this_cpu_timers(&RROS_MONO_CLOCK));
 
@@ -1091,26 +1091,26 @@ impl clockchips::CoreTick for RrosCoreTick {
             // This `if` won't enter, so there is a problem.
             // let a = ((*this_rq).local_flags & RQ_TPROXY != 0x0);
             // if rq_has_tproxy  {
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
             // }
             // let b = ((*this_rq).get_curr().lock().deref_mut().state & (T_ROOT as u32) != 0x0);
 
             // if curr_state_is_t_root  {
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
-            //     pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
+            //     // pr_debug!("in rros_core_tick");
             // }
             if rq_has_tproxy && curr_state_is_t_root {
                 rros_notify_proxy_tick(this_rq);
@@ -1251,7 +1251,7 @@ pub fn rros_clock_init() -> Result<usize> {
     if let Err(_) = ret {
         //rros_put_element(&rros_mono_clock.element);
     }
-    pr_debug!("clock init success!");
+    // pr_debug!("clock init success!");
     Ok(0)
 }
 

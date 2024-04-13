@@ -417,7 +417,7 @@ unsafe extern "C" fn this_rros_rq_exit_irq_local_flags() -> c_types::c_int {
         local_flags = (*rq).local_flags;
     }
 
-    // pr_debug!("{} cc {} \n", flags, local_flags);
+    // // pr_debug!("{} cc {} \n", flags, local_flags);
 
     if ((flags | local_flags) & RQ_SCHED) != 0x0 {
         return 1 as c_types::c_int;
@@ -1268,7 +1268,7 @@ fn init_rq_ptr(rq_ptr: *mut rros_rq) -> Result<usize> {
     init_root_thread(rq_ptr)?;
     init_rtimer(rq_ptr)?;
     init_ptimer(rq_ptr)?;
-    // pr_debug!("{:p}\n", &(*rq_ptr).local_flags);
+    // // pr_debug!("{:p}\n", &(*rq_ptr).local_flags);
     // (*rq_ptr) = rros_rq::new()?;
     // let mut x = SpinLock::new(RrosTimer::new(1));
     // let pinned =  Pin::new_unchecked(&mut x);
@@ -1391,12 +1391,12 @@ pub fn rros_init_sched() -> Result<usize> {
     }
 
     for cpu in possible_cpus() {
-        pr_debug!("{}\n", cpu);
+        // pr_debug!("{}\n", cpu);
 
         // let mut rq_ptr = this_rros_rq();
         let rq_ptr = unsafe { kernel::percpu_defs::per_cpu(RROS_RUNQUEUES, cpu as i32) };
         init_rq_ptr(rq_ptr)?;
-        // // pr_debug!("{:p}\n", &(*rq_ptr).local_flags);
+        // // // pr_debug!("{:p}\n", &(*rq_ptr).local_flags);
         // (*rq_ptr) = rros_rq::new()?;
         // let mut x = SpinLock::new(RrosTimer::new(1));
         // let pinned = Pin::new_unchecked(&mut x);
@@ -1432,8 +1432,8 @@ pub fn rros_init_sched() -> Result<usize> {
         // (*rq_ptr).root_thread.as_ref().unwrap().lock().rtimer = Some(Arc::try_new(r)?);
         // (*rq_ptr).root_thread.as_ref().unwrap().lock().ptimer = Some(Arc::try_new(p)?);
 
-        // pr_debug!("yinyongcishu is {}", Arc::strong_count(&(*rq_ptr).root_thread.clone().unwrap()));
-        // pr_debug!("yinyongcishu is {}", Arc::strong_count(&(*rq_ptr).root_thread.clone().unwrap()));
+        // // pr_debug!("yinyongcishu is {}", Arc::strong_count(&(*rq_ptr).root_thread.clone().unwrap()));
+        // // pr_debug!("yinyongcishu is {}", Arc::strong_count(&(*rq_ptr).root_thread.clone().unwrap()));
 
         init_rq_ptr_inband_timer(rq_ptr)?;
         // unsafe {
@@ -1449,7 +1449,7 @@ pub fn rros_init_sched() -> Result<usize> {
     // let cpu = 0;
     let ret = register_classes();
     match ret {
-        Ok(_) => pr_debug!("register_classes success!"),
+        Ok(_) => {},// pr_debug!("register_classes success!"),
         Err(e) => {
             pr_err!("register_classes error!");
             return Err(e);
@@ -1461,16 +1461,16 @@ pub fn rros_init_sched() -> Result<usize> {
     for cpu in online_cpus() {
         unsafe {
             if RROS_SCHED_TOPMOS == 0 as *mut RrosSchedClass {
-                pr_debug!("RROS_SCHED_TOPMOS is 0 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                // pr_debug!("RROS_SCHED_TOPMOS is 0 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             }
         }
         let rq_ptr = unsafe { kernel::percpu_defs::per_cpu(RROS_RUNQUEUES, cpu as i32) };
         // TODO: fix the i32 problem
         let ret = { init_rq(rq_ptr, cpu as i32) };
         match ret {
-            Ok(_) => pr_debug!("init_rq success!"),
+            Ok(_) => {},// pr_debug!("init_rq success!"),
             Err(e) => {
-                pr_warn!("init_rq error!");
+                // pr_warn!("init_rq error!");
                 return Err(e);
             }
         }
@@ -1489,12 +1489,12 @@ pub fn rros_init_sched() -> Result<usize> {
             unsafe { RROS_MACHINE_CPUDATA as *mut _ }
         );
         if ret != 0 {
-            pr_warn!("request_percpu_irq error!");
+            // pr_warn!("request_percpu_irq error!");
             return Err(Error::EINTR);
         }
     }
 
-    pr_info!("sched init success!");
+    // pr_info!("sched init success!");
     Ok(0)
 }
 
@@ -1515,15 +1515,15 @@ fn register_classes() -> Result<usize> {
     // let RrosSchedFifo = unsafe{fifo::RrosSchedFifo};
     let res = unsafe { register_one_class(&mut idle::RROS_SCHED_IDLE, 1) };
     unsafe {
-        pr_debug!(
-            "after one register_one_class,topmost = {:p}",
-            RROS_SCHED_TOPMOS
-        )
+        // pr_debug!(
+        //     "after one register_one_class,topmost = {:p}",
+        //     RROS_SCHED_TOPMOS
+        // )
     };
     match res {
-        Ok(_) => pr_info!("register_one_class(idle) success!"),
+        Ok(_) => {},// pr_info!("register_one_class(idle) success!"),
         Err(e) => {
-            pr_warn!("register_one_class(idle) error!");
+            // pr_warn!("register_one_class(idle) error!");
             return Err(e);
         }
     }
@@ -1531,29 +1531,29 @@ fn register_classes() -> Result<usize> {
 
     let res = unsafe { register_one_class(&mut tp::RROS_SCHED_TP, 2) };
     unsafe {
-        pr_debug!(
-            "after two register_one_class,topmost = {:p}",
-            RROS_SCHED_TOPMOS
-        )
+        // pr_debug!(
+    //         "after two register_one_class,topmost = {:p}",
+    //         RROS_SCHED_TOPMOS
+    //     )
     };
     match res {
-        Ok(_) => pr_info!("register_one_class(tp) success!"),
+        Ok(_) => {},// pr_info!("register_one_class(tp) success!"),
         Err(e) => {
-            pr_warn!("register_one_class(tp) error!");
+            // pr_warn!("register_one_class(tp) error!");
             return Err(e);
         }
     }
     let res = unsafe { register_one_class(&mut fifo::RROS_SCHED_FIFO, 3) };
     unsafe {
-        pr_debug!(
-            "after three register_one_class,topmost = {:p}",
-            RROS_SCHED_TOPMOS
-        )
+        // pr_debug!(
+        //     "after three register_one_class,topmost = {:p}",
+        //     RROS_SCHED_TOPMOS
+        // )
     };
     match res {
-        Ok(_) => pr_info!("register_one_class(fifo) success!"),
+        Ok(_) => {},// pr_info!("register_one_class(fifo) success!"),
         Err(e) => {
-            pr_warn!("register_one_class(fifo) error!");
+            // pr_warn!("register_one_class(fifo) error!");
             return Err(e);
         }
     }
@@ -1577,10 +1577,10 @@ fn register_one_class(sched_class: &mut RrosSchedClass, index: i32) -> Result<us
         unsafe { RROS_SCHED_TOPMOS = &mut fifo::RROS_SCHED_FIFO as *mut RrosSchedClass };
     }
     unsafe {
-        pr_debug!(
-            "in register_one_class,RROS_SCHED_TOPMOS = {:p}",
-            RROS_SCHED_TOPMOS
-        )
+        // pr_debug!(
+        //     "in register_one_class,RROS_SCHED_TOPMOS = {:p}",
+        //     RROS_SCHED_TOPMOS
+        // )
     };
     if index != 3 {
         if index == 1 {
@@ -1621,16 +1621,16 @@ fn init_rq(rq: *mut rros_rq, cpu: i32) -> Result<usize> {
 
     let mut p = unsafe { RROS_SCHED_TOPMOS };
 
-    pr_debug!("before11111111111111111111111111111111111111");
+    // pr_debug!("before11111111111111111111111111111111111111");
     while p != 0 as *mut RrosSchedClass {
-        pr_debug!("p!=0!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        // pr_debug!("p!=0!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         if unsafe { (*p).sched_init != None } {
             let func;
             unsafe {
                 match (*p).sched_init {
                     Some(f) => func = f,
                     None => {
-                        pr_warn!("sched_init function error");
+                        // pr_warn!("sched_init function error");
                         return Err(kernel::Error::EINVAL);
                     }
                 }
@@ -1639,16 +1639,16 @@ fn init_rq(rq: *mut rros_rq, cpu: i32) -> Result<usize> {
         }
         unsafe { p = (*p).next };
     }
-    pr_debug!("after11111111111111111111111111111111111111");
+    // pr_debug!("after11111111111111111111111111111111111111");
 
     unsafe { (*rq).flags = 0 };
     unsafe { (*rq).local_flags = RQ_IDLE };
-    // pr_debug!("yinyongcishu is {}", Arc::strong_count(&(*rq).root_thread.clone().unwrap()));
+    // // pr_debug!("yinyongcishu is {}", Arc::strong_count(&(*rq).root_thread.clone().unwrap()));
     let a = unsafe { (*rq).root_thread.clone() };
     if a.is_some() {
         unsafe { (*rq).curr = a.clone() };
     }
-    // pr_debug!("The state is {:}\n", (*rq).get_curr().lock().state);
+    // // pr_debug!("The state is {:}\n", (*rq).get_curr().lock().state);
     unsafe {
         rros_init_timer_on_rq(
             (*rq).get_inband_timer(),
@@ -1695,22 +1695,22 @@ fn init_rq(rq: *mut rros_rq, cpu: i32) -> Result<usize> {
     unsafe { (*sched_param.locked_data().get()).fifo.prio = idle::RROS_IDLE_PRIO };
     iattr.sched_param = Some(sched_param);
 
-    // pr_debug!("yinyongcishu is {}", Arc::strong_count(&(*rq).root_thread.clone().unwrap()));
-    // pr_debug!("yinyongcishu is {}", Arc::strong_count(&(*rq).root_thread.clone().unwrap()));
+    // // pr_debug!("yinyongcishu is {}", Arc::strong_count(&(*rq).root_thread.clone().unwrap()));
+    // // pr_debug!("yinyongcishu is {}", Arc::strong_count(&(*rq).root_thread.clone().unwrap()));
     unsafe { rros_init_thread(&(*rq).root_thread.clone(), iattr, rq, name_fmt)? }; //c_str!("0").as_char_ptr()
 
     unsafe {
         let next_add = (*rq).root_thread.clone().unwrap().lock().deref_mut() as *mut RrosThread;
-        pr_debug!("the root thread add is  next_add {:p}", next_add);
+        // pr_debug!("the root thread add is  next_add {:p}", next_add);
     }
 
-    // pr_debug!("The state is {:}\n", (*rq).get_curr().lock().state);
+    // // pr_debug!("The state is {:}\n", (*rq).get_curr().lock().state);
     let rq_root_thread_2;
     unsafe {
         match (*rq).root_thread.clone() {
             Some(rt) => rq_root_thread_2 = rt.clone(),
             None => {
-                pr_warn!("use rq.root_thread error");
+                // pr_warn!("use rq.root_thread error");
                 return Err(kernel::Error::EINVAL);
             }
         }
@@ -1746,8 +1746,8 @@ fn rros_sched_tick(rq: *mut rros_rq) -> Result {
     let b = !sched_class.sched_tick.is_none();
     let c = state & (RROS_THREAD_BLOCK_BITS | T_RRB) == T_RRB;
     let d = rros_preempt_count() == 0;
-    // pr_debug!("The current root state {}", (*rq).root_thread.as_ref().unwrap().lock().state);
-    pr_debug!("abcd {} {} {} {} state{} 2208\n", a, b, c, d, state);
+    // // pr_debug!("The current root state {}", (*rq).root_thread.as_ref().unwrap().lock().state);
+    // pr_debug!("abcd {} {} {} {} state{} 2208\n", a, b, c, d, state);
     if a && b && c && d {
         sched_class.sched_tick.unwrap()(Some(rq))?;
         // sched_class->sched_tick(rq);
@@ -1761,7 +1761,7 @@ pub fn roundrobin_handler(_timer: *mut RrosTimer) {
     match res {
         Ok(_) => (),
         Err(_e) => {
-            pr_warn!("rros_sched_tick error!");
+            // pr_warn!("rros_sched_tick error!");
         }
     }
 }
@@ -1814,7 +1814,7 @@ pub fn rros_track_priority(
         {
             Some(f) => func = f,
             None => {
-                pr_warn!("rros_get_schedparam: sched_trackprio function error");
+                // pr_warn!("rros_get_schedparam: sched_trackprio function error");
                 return Err(kernel::Error::EINVAL);
             }
         };
@@ -1837,7 +1837,7 @@ fn rros_ceil_priority(thread: Arc<SpinLock<RrosThread>>, prio: i32) -> Result<us
         {
             Some(f) => func = f,
             None => {
-                pr_warn!("rros_ceil_priority:sched_ceilprio function error");
+                // pr_warn!("rros_ceil_priority:sched_ceilprio function error");
                 return Err(kernel::Error::EINVAL);
             }
         }
@@ -1975,7 +1975,7 @@ pub unsafe extern "C" fn rros_schedule() {
         local_flags = (*this_rq).local_flags;
     }
 
-    // pr_debug!(
+    // // pr_debug!(
     //     "rros_schedule: flags is {} local_flags is {}\n",
     //     flags,
     //     local_flags
@@ -2012,7 +2012,7 @@ extern "C" {
 unsafe extern "C" fn __rros_schedule(_arg: *mut c_types::c_void) -> i32 {
     unsafe {
         // fn __rros_schedule() {
-        // pr_debug!("sched thread!!!!");
+        // // pr_debug!("sched thread!!!!");
         // let prev = curr;
         let prev;
         let curr;
@@ -2043,21 +2043,21 @@ unsafe extern "C" fn __rros_schedule(_arg: *mut c_types::c_void) -> i32 {
 
         let curr_add = curr.locked_data().get();
         next = pick_next_thread(Some(this_rq)).unwrap();
-        // unsafe{pr_debug!("begin of the rros_schedule uninit_thread: x ref is {}", Arc::strong_count(&next.clone()));}
+        // unsafe{// pr_debug!("begin of the rros_schedule uninit_thread: x ref is {}", Arc::strong_count(&next.clone()));}
 
         let next_add = next.locked_data().get();
 
         if next_add == curr_add {
             // if the curr and next are both root, we should call the inband thread
-            pr_debug!("__rros_schedule: next_add == curr_add ");
+            // pr_debug!("__rros_schedule: next_add == curr_add ");
             let next_state = (*next.locked_data().get()).state;
             if (next_state & T_ROOT as u32) != 0x0 {
                 if (*this_rq).local_flags & RQ_TPROXY != 0x0 {
-                    pr_debug!("__rros_schedule: (*this_rq).local_flags & RQ_TPROXY != 0x0 ");
+                    // pr_debug!("__rros_schedule: (*this_rq).local_flags & RQ_TPROXY != 0x0 ");
                     tick::rros_notify_proxy_tick(this_rq);
                 }
                 if (*this_rq).local_flags & RQ_TDEFER != 0x0 {
-                    pr_debug!("__rros_schedule: (*this_rq).local_flags & RQ_TDEFER !=0x0 ");
+                    // pr_debug!("__rros_schedule: (*this_rq).local_flags & RQ_TDEFER !=0x0 ");
                     tick::rros_program_local_tick(
                         &mut clock::RROS_MONO_CLOCK as *mut clock::RrosClock,
                     );
@@ -2070,7 +2070,7 @@ unsafe extern "C" fn __rros_schedule(_arg: *mut c_types::c_void) -> i32 {
 
         prev = curr.clone();
         (*this_rq).curr = Some(next.clone());
-        // unsafe{pr_debug!("mid of the rros_schedule uninit_thread: x ref is {}", Arc::strong_count(&next.clone()));}
+        // unsafe{// pr_debug!("mid of the rros_schedule uninit_thread: x ref is {}", Arc::strong_count(&next.clone()));}
         leaving_inband = false;
 
         let prev_state = (*prev.locked_data().get()).state;
@@ -2091,16 +2091,16 @@ unsafe extern "C" fn __rros_schedule(_arg: *mut c_types::c_void) -> i32 {
         // prepare_rq_switch(this_rq, prev, next);
 
         let prev_add = prev.locked_data().get();
-        pr_debug!("the run thread add is  spinlock prev {:p}", prev_add);
+        // pr_debug!("the run thread add is  spinlock prev {:p}", prev_add);
 
         let next_add = next.locked_data().get();
-        pr_debug!("the run thread add is  spinlock  next {:p}", next_add);
-        // pr_debug!("the run thread add is  arc prev {:p}", prev);
-        // pr_debug!("the run thread add is  arc next {:p}", next);
+        // pr_debug!("the run thread add is  spinlock  next {:p}", next_add);
+        // // pr_debug!("the run thread add is  arc prev {:p}", prev);
+        // // pr_debug!("the run thread add is  arc next {:p}", next);
 
         // fix!!!!!
         let inband_tail;
-        // pr_debug!("before the inband_tail next state is {}", next.lock().state);
+        // // pr_debug!("before the inband_tail next state is {}", next.lock().state);
         inband_tail = dovetail::dovetail_context_switch(
             &mut (*prev.locked_data().get()).altsched,
             &mut (*next.locked_data().get()).altsched,
@@ -2115,16 +2115,16 @@ unsafe extern "C" fn __rros_schedule(_arg: *mut c_types::c_void) -> i32 {
         //     &next->altsched, leaving_inband);
 
         // rust_helper_hard_local_irq_restore(flags);
-        // pr_debug!("before the inband_tail curr state is {}", curr.lock().state);
+        // // pr_debug!("before the inband_tail curr state is {}", curr.lock().state);
 
-        pr_debug!("the inband_tail is {}", inband_tail);
+        // pr_debug!("the inband_tail is {}", inband_tail);
         if inband_tail == false {
             lock::hard_local_irq_restore(flags);
         }
-        pr_debug!(
-            "end of the rros_schedule uninit_thread: x ref is {}",
-            Arc::strong_count(&next.clone())
-        );
+        // pr_debug!(
+        //     "end of the rros_schedule uninit_thread: x ref is {}",
+        //     Arc::strong_count(&next.clone())
+        // );
         0
     }
 }
@@ -2181,9 +2181,9 @@ pub fn __pick_next_thread(rq: Option<*mut rros_rq>) -> Option<Arc<SpinLock<RrosT
     }
 
     next = lookup_fifo_class(rq.clone());
-    // pr_debug!("next2");
+    // // pr_debug!("next2");
     if next.is_some() {
-        pr_debug!("__pick_next_thread: next.is_some");
+        // pr_debug!("__pick_next_thread: next.is_some");
         return next;
     }
 
@@ -2192,14 +2192,14 @@ pub fn __pick_next_thread(rq: Option<*mut rros_rq>) -> Option<Arc<SpinLock<RrosT
     let mut next;
     let mut p = unsafe { RROS_SCHED_LOWER };
     while p != 0 as *mut RrosSchedClass {
-        pr_debug!("p!=0!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! in sched_pick");
+        // pr_debug!("p!=0!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! in sched_pick");
         if unsafe { (*p).sched_pick != None } {
             let func;
             unsafe {
                 match (*p).sched_pick {
                     Some(f) => func = f,
                     None => {
-                        pr_warn!("sched_pick function error, this should not happen");
+                        // pr_warn!("sched_pick function error, this should not happen");
                         return None;
                         // return Err(kernel::Error::EINVAL);
                     }
@@ -2209,7 +2209,7 @@ pub fn __pick_next_thread(rq: Option<*mut rros_rq>) -> Option<Arc<SpinLock<RrosT
             match next {
                 Ok(n) => return Some(n),
                 Err(_e) => {
-                    pr_warn!("nothing found");
+                    // pr_warn!("nothing found");
                 }
             }
         }
@@ -2229,7 +2229,7 @@ pub fn lookup_fifo_class(rq: Option<*mut rros_rq>) -> Option<Arc<SpinLock<RrosTh
     if q.is_empty() {
         return None;
     }
-    // pr_debug!("next0");
+    // // pr_debug!("next0");
     let thread = q.get_head().unwrap().value.clone();
     let sched_class = unsafe { (*thread.locked_data().get()).sched_class.clone().unwrap() };
 
@@ -2238,7 +2238,7 @@ pub fn lookup_fifo_class(rq: Option<*mut rros_rq>) -> Option<Arc<SpinLock<RrosTh
         return Some(func(rq).unwrap());
     }
 
-    pr_debug!("lookup_fifo_class :2");
+    // pr_debug!("lookup_fifo_class :2");
     q.de_head();
     return Some(thread.clone());
 }
@@ -2247,9 +2247,9 @@ pub fn set_next_running(rq: Option<*mut rros_rq>, next: Option<Arc<SpinLock<Rros
     let next = next.unwrap();
     unsafe { (*next.locked_data().get()).state &= !T_READY };
     let state = unsafe { (*next.locked_data().get()).state };
-    pr_debug!("set_next_running: next.lock().state is {}", unsafe {
-        (*next.locked_data().get()).state
-    });
+    // pr_debug!("set_next_running: next.lock().state is {}", unsafe {
+    //     (*next.locked_data().get()).state
+    // });
     if state & T_RRB != 0 {
         unsafe {
             let delta = (*next.locked_data().get()).rrperiod;
@@ -2281,11 +2281,11 @@ pub fn rros_set_thread_policy(
     // let test = p.clone().unwrap();
     let rq: Option<*mut rros_rq>;
     rq = rros_get_thread_rq(thread.clone(), &mut flags);
-    pr_debug!("rros_get_thread_rq success");
+    // pr_debug!("rros_get_thread_rq success");
     rros_set_thread_policy_locked(thread.clone(), sched_class.clone(), p.clone())?;
-    pr_debug!("rros_set_thread_policy_locked success");
+    // pr_debug!("rros_set_thread_policy_locked success");
     rros_put_thread_rq(thread.clone(), rq.clone(), flags)?;
-    pr_debug!("rros_put_thread_rq success");
+    // pr_debug!("rros_put_thread_rq success");
     Ok(0)
 }
 
@@ -2293,7 +2293,7 @@ pub fn rros_get_thread_rq(
     thread: Option<Arc<SpinLock<RrosThread>>>,
     flags: &mut c_types::c_ulong,
 ) -> Option<*mut rros_rq> {
-    // pr_debug!("yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
+    // // pr_debug!("yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
     //todo raw_spin_lock_irqsave and raw_spin_lock
     *flags = lock::hard_local_irq_save();
     // unsafe{rust_helper_preempt_disable();}
@@ -2327,7 +2327,7 @@ pub fn rros_set_thread_policy_locked(
     let mut flag_base_class = 0;
     let base_class = thread_unwrap.lock().base_class;
     if base_class.is_none() {
-        // pr_debug!("baseclass is none!");
+        // // pr_debug!("baseclass is none!");
         flag_base_class = 1;
     }
 
@@ -2337,7 +2337,7 @@ pub fn rros_set_thread_policy_locked(
     {
         rros_declare_thread(thread.clone(), sched_class.clone(), p.clone())?;
     }
-    // pr_debug!("yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
+    // // pr_debug!("yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
     if base_class.is_some() {
         let state = thread_unwrap.lock().state;
         if state & T_READY != 0x0 {
@@ -2357,10 +2357,10 @@ pub fn rros_set_thread_policy_locked(
     //     thread->sched_class = NULL;
     // }
     // let test = p.clone().unwrap();
-    // pr_debug!("! yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
+    // // pr_debug!("! yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
     effective = rros_set_schedparam(thread.clone(), p.clone());
-    // pr_debug!("thread after setting {}", thread_unwrap.lock().state);
-    // pr_debug!("! yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
+    // // pr_debug!("thread after setting {}", thread_unwrap.lock().state);
+    // // pr_debug!("! yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
     if effective == Ok(0) {
         thread_unwrap.lock().sched_class = sched_class.clone();
         let cprio = thread_unwrap.lock().cprio;
@@ -2372,7 +2372,7 @@ pub fn rros_set_thread_policy_locked(
     //     thread->sched_class = orig_effective_class;
     let state = thread_unwrap.lock().state;
     if state & T_READY != 0x0 {
-        // pr_debug!("wwwwwwwwhat the fuck!");
+        // // pr_debug!("wwwwwwwwhat the fuck!");
         rros_enqueue_thread(thread.clone().unwrap())?;
     }
 
@@ -2381,8 +2381,8 @@ pub fn rros_set_thread_policy_locked(
         let rq = thread_unwrap.lock().rq;
         rros_set_resched(rq);
     }
-    // pr_debug!("hy kkkkk3 {}", thread_unwrap.lock().state);
-    // pr_debug!("yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
+    // // pr_debug!("hy kkkkk3 {}", thread_unwrap.lock().state);
+    // // pr_debug!("yinyongcishu is {}", Arc::strong_count(&thread.clone().unwrap()));
     Ok(0)
 }
 
@@ -2396,7 +2396,7 @@ fn rros_check_schedparams(
         let func = sched_class_ptr.sched_chkparam.unwrap();
         func(thread.clone(), p.clone())?;
     } else {
-        pr_debug!("rros_check_schedparams no sched_chkparam functions");
+        // pr_debug!("rros_check_schedparams no sched_chkparam functions");
     }
     Ok(0)
 }
@@ -2415,7 +2415,7 @@ pub fn rros_get_schedparam(
         {
             Some(f) => func = f,
             None => {
-                pr_warn!("rros_get_schedparam: sched_getparam function error");
+                // pr_warn!("rros_get_schedparam: sched_getparam function error");
                 return Err(kernel::Error::EINVAL);
             }
         };
@@ -2433,13 +2433,13 @@ fn rros_set_schedparam(
     // let thread_lock = thread_unwrap.lock();
     let base_class_clone = thread_unwrap.lock().base_class.clone();
     if base_class_clone.is_none() {
-        pr_info!("rros_set_schedparam: finded");
+        // pr_info!("rros_set_schedparam: finded");
     }
     let base_class_unwrap = base_class_clone.unwrap();
     let func = base_class_unwrap.sched_setparam.unwrap();
-    // pr_debug!("thread before setting {}", thread_unwrap.lock().state);
+    // // pr_debug!("thread before setting {}", thread_unwrap.lock().state);
     let res = func(thread.clone(), p.clone());
-    // pr_debug!("thread before calling {}", thread_unwrap.lock().state);
+    // // pr_debug!("thread before calling {}", thread_unwrap.lock().state);
     res
     // return ;
 }
@@ -2469,7 +2469,7 @@ fn rros_declare_thread(
         }
     }
 
-    pr_info!("rros_declare_thread success!");
+    // pr_info!("rros_declare_thread success!");
     Ok(0)
 }
 
@@ -2530,31 +2530,31 @@ pub fn check_cpu_affinity(_thread: Arc<SpinLock<RrosThread>>, _cpu: i32) {}
 unsafe extern "C" fn rust_resume_oob_task(ptr: *mut c_types::c_void, cpu: i32) {
     // struct RrosThread *thread = rros_thread_from_task(p);
 
-    // pr_debug!("rros rros mutex ptr{:p}", ptr);
+    // // pr_debug!("rros rros mutex ptr{:p}", ptr);
     let thread: Arc<SpinLock<RrosThread>>;
 
     unsafe {
         thread = Arc::from_raw(ptr as *mut SpinLock<RrosThread>);
-        pr_debug!(
-            "0600 uninit_thread: x ref is {}",
-            Arc::strong_count(&thread)
-        );
+        // pr_debug!(
+        //     "0600 uninit_thread: x ref is {}",
+        //     Arc::strong_count(&thread)
+        // );
         Arc::increment_strong_count(ptr);
-        pr_debug!(
-            "b600 uninit_thread: x ref is {}",
-            Arc::strong_count(&thread)
-        );
-        pr_debug!("the ptr in resume address is {:p}", ptr);
-        pr_debug!(
-            "a600 uninit_thread: x ref is {}",
-            Arc::strong_count(&thread)
-        );
-        // unsafe{pr_debug!("600 uninit_thread: x ref is {}", Arc::strong_count(ptr));}
+        // pr_debug!(
+        //     "b600 uninit_thread: x ref is {}",
+        //     Arc::strong_count(&thread)
+        // );
+        // pr_debug!("the ptr in resume address is {:p}", ptr);
+        // pr_debug!(
+        //     "a600 uninit_thread: x ref is {}",
+        //     Arc::strong_count(&thread)
+        // );
+        // unsafe{// pr_debug!("600 uninit_thread: x ref is {}", Arc::strong_count(ptr));}
     }
-    pr_debug!(
-        "2a600 uninit_thread: x ref is {}",
-        Arc::strong_count(&thread)
-    );
+    // pr_debug!(
+    //     "2a600 uninit_thread: x ref is {}",
+    //     Arc::strong_count(&thread)
+    // );
 
     /*
      * Dovetail calls us with hard irqs off, oob stage
@@ -2565,31 +2565,31 @@ unsafe extern "C" fn rust_resume_oob_task(ptr: *mut c_types::c_void, cpu: i32) {
         rust_helper_unstall_oob();
     }
     check_cpu_affinity(thread.clone(), cpu);
-    pr_debug!(
-        "3a600 uninit_thread: x ref is {}",
-        Arc::strong_count(&thread)
-    );
+    // pr_debug!(
+    //     "3a600 uninit_thread: x ref is {}",
+    //     Arc::strong_count(&thread)
+    // );
     rros_release_thread(thread.clone(), T_INBAND, 0);
     /*
      * If T_PTSTOP is set, pick_next_thread() is not allowed to
      * freeze @thread while in flight to the out-of-band stage.
      */
-    pr_debug!(
-        "4a600 uninit_thread: x ref is {}",
-        Arc::strong_count(&thread)
-    );
+    // pr_debug!(
+    //     "4a600 uninit_thread: x ref is {}",
+    //     Arc::strong_count(&thread)
+    // );
     unsafe {
         sched::rros_schedule();
-        pr_debug!(
-            "5a600 uninit_thread: x ref is {}",
-            Arc::strong_count(&thread)
-        );
+        // pr_debug!(
+        //     "5a600 uninit_thread: x ref is {}",
+        //     Arc::strong_count(&thread)
+        // );
         rust_helper_stall_oob();
     }
-    pr_debug!(
-        "6a600 uninit_thread: x ref is {}",
-        Arc::strong_count(&thread)
-    );
+    // pr_debug!(
+    //     "6a600 uninit_thread: x ref is {}",
+    //     Arc::strong_count(&thread)
+    // );
 }
 
 extern "C" {
@@ -2598,7 +2598,7 @@ extern "C" {
 }
 
 pub fn rros_switch_inband(cause: i32) {
-    pr_debug!("rros_switch_inband: in");
+    // pr_debug!("rros_switch_inband: in");
     let curr = unsafe { &mut *rros_current() };
     let this_rq: Option<*mut rros_rq>;
     let notify: bool;
@@ -2614,10 +2614,10 @@ pub fn rros_switch_inband(cause: i32) {
 
     let info = curr.lock().info;
     if cause == (RROS_HMDIAG_TRAP as i32) {
-        pr_debug!("rros_switch_inband: cause == RROS_HMDIAG_TRAP");
+        // pr_debug!("rros_switch_inband: cause == RROS_HMDIAG_TRAP");
         // TODO:
     } else if info & T_PTSIG != 0x0 {
-        pr_debug!("rros_switch_inband: curr->info & T_PTSIG");
+        // pr_debug!("rros_switch_inband: curr->info & T_PTSIG");
         // TODO:
     }
 

@@ -24,7 +24,7 @@ use crate::{
     list_for_each_entry,
     list_next_entry,
     // mutex::{self, rros_init_kmutex, rros_lock_kmutex, rros_unlock_kmutex, RrosKMutex},
-    pr_debug,
+    // pr_debug,
     pr_err,
     sched::{rros_schedule, RrosThread, RrosValue},
     thread::{rros_current, T_RMID},
@@ -411,12 +411,12 @@ fn check_no_loop_deeper(origin: &File, item: &RrosPollItem, depth: i32) -> Resul
     let mut ret: Result<i32> = Ok(0);
     let rfilp: &mut RrosFile;
 
-    pr_debug!("poll: check_no_loop_deeper: depth is {}", depth);
-    pr_debug!(
-        "poll: check_no_loop_deeper: address of item is {:p}",
-        item as *const RrosPollItem
-    );
-    pr_debug!("poll: check_no_loop_deeper: item.fd is {}", item.fd);
+    // pr_debug!("poll: check_no_loop_deeper: depth is {}", depth);
+    // pr_debug!(
+    //     "poll: check_no_loop_deeper: address of item is {:p}",
+    //     item as *const RrosPollItem
+    // );
+    // pr_debug!("poll: check_no_loop_deeper: item.fd is {}", item.fd);
     if depth >= POLLER_NEST_MAX {
         return Err(Error::ELOOP);
     }
@@ -425,11 +425,11 @@ fn check_no_loop_deeper(origin: &File, item: &RrosPollItem, depth: i32) -> Resul
         match rros_get_file(item.fd) {
             Some(mut r) => {
                 rfilp = unsafe { r.as_mut() };
-                pr_debug!(
-                    "poll: check_no_loop_deeper: rfilp is {:p}, rfilp.filp.private_data is {:p}",
-                    rfilp as *mut RrosFile,
-                    unsafe { (*rfilp.filp).private_data }
-                );
+                // pr_debug!(
+                //     "poll: check_no_loop_deeper: rfilp is {:p}, rfilp.filp.private_data is {:p}",
+                //     rfilp as *mut RrosFile,
+                //     unsafe { (*rfilp.filp).private_data }
+                // );
                 unsafe {
                     if rfilp.get_name().unwrap() != "poll" {
                         break 'outer;
@@ -475,14 +475,14 @@ fn check_no_loop(group: &File, item: &RrosPollItem) -> Result<i32> {
 }
 
 fn add_item(filp: &File, group: &mut RrosPollGroup, creq: RrosPollCtlreq) -> Result<i32> {
-    pr_debug!(
-        "poll: add_item: creq.fd = {}, creq.events = {}",
-        creq.fd,
-        creq.events
-    );
-    pr_debug!("poll: add_item: filp.ptr.private_data is {:p}", unsafe {
-        (*filp.ptr).private_data
-    });
+    // pr_debug!(
+    //     "poll: add_item: creq.fd = {}, creq.events = {}",
+    //     creq.fd,
+    //     creq.events
+    // );
+    // pr_debug!("poll: add_item: filp.ptr.private_data is {:p}", unsafe {
+    //     (*filp.ptr).private_data
+    // });
     let mut item: RrosPollItem = RrosPollItem::new();
     let rfilp: &mut RrosFile;
     let mut ret: Result<i32> = Ok(0);
@@ -1079,7 +1079,7 @@ fn poll_oob_ioctl(
             }
             unsafe {
                 (*u_wreq).nrset = ret.unwrap();
-                pr_debug!("(*u_wreq).nrset is {:?}", (*u_wreq).nrset);
+                // pr_debug!("(*u_wreq).nrset is {:?}", (*u_wreq).nrset);
             }
         }
         _ => {

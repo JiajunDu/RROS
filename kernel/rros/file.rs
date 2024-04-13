@@ -58,11 +58,11 @@ impl RrosFile {
     pub fn rros_open_file(&mut self, filp: *mut bindings::file) -> Result<usize> {
         self.filp = filp;
 
-        pr_debug!("the address of self is {:p}", self);
+        // pr_debug!("the address of self is {:p}", self);
         unsafe {
             (*filp).oob_data = self as *const RrosFile as _;
         }
-        unsafe { pr_debug!("the address of filp oob_data is {:p}", (*filp).oob_data) };
+        unsafe { };// pr_debug!("the address of filp oob_data is {:p}", (*filp).oob_data) };
         self.crossing.init()?;
         Ok(0)
     }
@@ -105,7 +105,7 @@ impl RrosFile {
 impl Drop for RrosFile {
     fn drop(&mut self) {
         // SAFETY: The type invariants guarantee that `RrosFile::filp` has a non-zero reference count.
-        pr_debug!("I am the RrosFile drop");
+        // pr_debug!("I am the RrosFile drop");
     }
 }
 
@@ -187,15 +187,15 @@ pub fn lookup_rfd(fd: u32, _files: &mut FilesStruct) -> Option<*mut RrosFd> {
 /// It returns the value that was removed if rfd exists, or ['None'] otherwise.
 pub fn unindex_rfd(fd: u32, _files: &mut FilesStruct) -> Option<RrosFd> {
     let flags = FD_TREE.irq_lock_noguard();
-    pr_debug!("unindex_rfd 1");
+    // pr_debug!("unindex_rfd 1");
     let ret = unsafe { (*FD_TREE.locked_data().get()).remove(&fd) };
-    pr_debug!("unindex_rfd 2");
+    // pr_debug!("unindex_rfd 2");
     if ret.is_none() {
-        pr_debug!("unindex_rfd 3");
+        // pr_debug!("unindex_rfd 3");
         FD_TREE.irq_unlock_noguard(flags);
         return None;
     } else {
-        pr_debug!("unindex_rfd 4");
+        // pr_debug!("unindex_rfd 4");
         FD_TREE.irq_unlock_noguard(flags);
         return Some(ret.unwrap());
     }
@@ -207,22 +207,22 @@ no_mangle_function_declaration! {
         if unsafe { (*filp).oob_data.is_null() } {
             return ;
         }
-        pr_debug!("filp is {:p}", filp);
-        pr_debug!("install_inband_fd 1");
+        // pr_debug!("filp is {:p}", filp);
+        // pr_debug!("install_inband_fd 1");
         unsafe {
-            pr_debug!(
-                "the address of filp is {:p}, the filp_oob is {:p}, fd is {}",
-                filp,
-                (*filp).oob_data,
-                fd
-            )
+            // pr_debug!(
+            //     "the address of filp is {:p}, the filp_oob is {:p}, fd is {}",
+            //     filp,
+            //     (*filp).oob_data,
+            //     fd
+            // )
         };
         let mut rfd = RrosFd::new(fd, files, unsafe {
             (*filp).oob_data as *const _ as *mut RrosFile
         });
         init_list_head!(rfd.poll_nodes.as_mut());
         let ret = index_rfd(rfd, filp);
-        pr_debug!("install_inband_fd 2");
+        // pr_debug!("install_inband_fd 2");
         if ret.is_err() {
             pr_err!("install_inband_fd: index_rfd failed\n");
         }
@@ -243,22 +243,22 @@ no_mangle_function_declaration! {
         if unsafe { (*filp).oob_data.is_null() } {
             return;
         }
-        pr_debug!("uninstall_inband_fd 1 {:p}", &filp as *const _ as *mut u8);
-        pr_debug!(
-            "uninstall_inband_fd 1 {:p} {:p}",
-            files.get_ptr(),
-            &files as *const _ as *mut u8
-        );
+        // pr_debug!("uninstall_inband_fd 1 {:p}", &filp as *const _ as *mut u8);
+        // pr_debug!(
+        //     "uninstall_inband_fd 1 {:p} {:p}",
+        //     files.get_ptr(),
+        //     &files as *const _ as *mut u8
+        // );
         unsafe {
-            pr_debug!(
-                "the address of filp is {:p}, the filp_oob is {:p}, fd is {}",
-                filp,
-                (*filp).oob_data,
-                fd
-            )
+            // pr_debug!(
+            //     "the address of filp is {:p}, the filp_oob is {:p}, fd is {}",
+            //     filp,
+            //     (*filp).oob_data,
+            //     fd
+            // )
         };
         let rfd = unindex_rfd(fd, &mut files);
-        pr_debug!("uninstall_inband_fd 2");
+        // pr_debug!("uninstall_inband_fd 2");
         match rfd {
             Some(mut rfd) => drop_watchpoints(&mut rfd), // drop_watchpoints(rfd);
             None => (),

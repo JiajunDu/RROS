@@ -5,7 +5,7 @@ use crate::factory::RrosElement;
 use kernel::{
     bindings, container_of,
     irq_work::IrqWork,
-    pr_debug,
+    // pr_debug,
     workqueue::{init_work, queue_work_on, Work},
 };
 
@@ -38,7 +38,7 @@ unsafe extern "C" fn do_irq_work(irq_work: *mut IrqWork) {
             &mut (*work).wq_work,
         ) && (*work).element.is_some()
     } {
-        pr_debug!("uncompleted rros_put_element()");
+        // pr_debug!("uncompleted rros_put_element()");
     }
     // TODO: rros_put_element is not implemented
     // if unsafe{rust_helper_queue_work((*work).wq,&mut (*work).wq_work)} && unsafe{(*)}
@@ -91,11 +91,11 @@ impl RrosWork {
         // TODO: rros_put_element is not implemented
         // if (work->element)
         if self.element.is_some() {
-            pr_debug!("uncompleted rros_get_element()");
+            // pr_debug!("uncompleted rros_get_element()");
         }
         // rros_get_element(work->element);
         if self.irq_work.irq_work_queue().is_err() && self.element.is_some() {
-            pr_debug!("uncompleted rros_put_element()")
+            // pr_debug!("uncompleted rros_put_element()")
         }
         // if (!irq_work_queue(&work->irq_work) && work->element)
         // rros_put_element(work->element);

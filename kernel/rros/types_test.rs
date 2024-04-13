@@ -3,7 +3,7 @@ use core::ptr::NonNull;
 use kernel::{
     hash_for_each_possible, initialize_lock_hashtable,
     linked_list::{GetLinks, Links, List},
-    pr_debug,
+    // pr_debug,
     prelude::*,
     types::*,
 };
@@ -54,7 +54,7 @@ fn test_hashtable() {
     assert_eq!(result[0], 3);
     assert_eq!(result[1], 1);
 
-    pr_debug!("hash table test ok.");
+    // pr_debug!("hash table test ok.");
 }
 
 #[allow(dead_code)]
@@ -113,7 +113,7 @@ pub fn test_list_macro() {
         ListTest2,
         {
             // unsafe{
-            //     pr_debug!("cur num is {}",(*cur).num);
+            //     // pr_debug!("cur num is {}",(*cur).num);
             // }
             array[counter] = unsafe { (*cur).num };
             counter += 1;
@@ -132,7 +132,7 @@ pub fn test_list_macro() {
         ListTest2,
         {
             // unsafe{
-            //     pr_debug!("cur num is {}",(*cur).num);
+            //     // pr_debug!("cur num is {}",(*cur).num);
             // }
             array[counter] = unsafe { (*cur).num };
             counter += 1;
@@ -151,7 +151,7 @@ pub fn test_list_macro() {
         ListTest2,
         {
             unsafe {
-                // pr_debug!("cur num is {}",(*cur).num);
+                // // pr_debug!("cur num is {}",(*cur).num);
                 if (*cur).num == 2 {
                     rust_helper_list_del_init(&mut (*cur).head);
                 }
@@ -167,7 +167,7 @@ pub fn test_list_macro() {
         ListTest2,
         {
             // unsafe{
-            //     pr_debug!("cur num is {}",(*cur).num);
+            //     // pr_debug!("cur num is {}",(*cur).num);
             // }
             array[counter] = unsafe { (*cur).num };
             counter += 1;
@@ -193,7 +193,7 @@ pub fn test_list_macro() {
     assert_eq!(array[0], 3);
     assert_eq!(array[2], 1);
 
-    pr_debug!("list_for_each ok!. ")
+    // pr_debug!("list_for_each ok!. ")
 }
 
 // struct KernelListExample{
@@ -326,7 +326,7 @@ pub fn test_rros_list_add_priff() {
     assert_eq!(array[1], 2);
     assert_eq!(array[2], 1);
 
-    pr_debug!("test list_add_priff(rros priority function) ok!")
+    // pr_debug!("test list_add_priff(rros priority function) ok!")
 }
 
 struct KernelListTest {
@@ -422,7 +422,7 @@ pub fn test_kernel_list() {
             start.move_next();
         }
     }
-    pr_debug!("test kernel list ok!");
+    // pr_debug!("test kernel list ok!");
 }
 
 #[allow(dead_code)]

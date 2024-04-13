@@ -40,7 +40,7 @@ impl FileOpener<u8> for XbufOps {
     fn open(shared: &u8, _fileref: &File) -> Result<Self::Wrapper> {
         let mut data = CloneData::default();
         data.ptr = shared as *const u8 as *mut u8;
-        pr_info!("open xbuf device success");
+        // pr_info!("open xbuf device success");
         Ok(Box::try_new(data)?)
     }
 }
@@ -56,9 +56,9 @@ impl FileOperations for XbufOps {
         data: &mut T,
         _offset: u64,
     ) -> Result<usize> {
-        pr_debug!("I'm the read ops of the xbuf factory.");
+        // pr_debug!("I'm the read ops of the xbuf factory.");
         let ret = xbuf_read(file, data);
-        pr_debug!("the result of xbuf read is {}", ret);
+        // pr_debug!("the result of xbuf read is {}", ret);
         if ret < 0 {
             Err(Error::from_kernel_errno(ret))
         } else {
@@ -67,9 +67,9 @@ impl FileOperations for XbufOps {
     }
 
     fn oob_read<T: IoBufferWriter>(_this: &CloneData, file: &File, data: &mut T) -> Result<usize> {
-        pr_debug!("I'm the oob_read ops of the xbuf factory.");
+        // pr_debug!("I'm the oob_read ops of the xbuf factory.");
         let ret = xbuf_oob_read(file, data);
-        pr_debug!("the result of xbuf oob_read is {}", ret);
+        // pr_debug!("the result of xbuf oob_read is {}", ret);
         if ret < 0 {
             Err(Error::from_kernel_errno(ret))
         } else {
@@ -83,9 +83,9 @@ impl FileOperations for XbufOps {
         data: &mut T,
         _offset: u64,
     ) -> Result<usize> {
-        pr_debug!("I'm the write ops of the xbuf factory.");
+        // pr_debug!("I'm the write ops of the xbuf factory.");
         let ret = xbuf_write(file, data);
-        pr_debug!("the result of xbuf write is {}", ret);
+        // pr_debug!("the result of xbuf write is {}", ret);
         if ret < 0 {
             Err(Error::from_kernel_errno(ret))
         } else {
@@ -94,9 +94,9 @@ impl FileOperations for XbufOps {
     }
 
     fn oob_write<T: IoBufferReader>(_this: &CloneData, file: &File, data: &mut T) -> Result<usize> {
-        pr_debug!("I'm the oob_write ops of the xbuf factory.");
+        // pr_debug!("I'm the oob_write ops of the xbuf factory.");
         let ret = xbuf_oob_write(file, data);
-        pr_debug!("the result of xbuf oob_write is {}", ret);
+        // pr_debug!("the result of xbuf oob_write is {}", ret);
         if ret < 0 {
             Err(Error::from_kernel_errno(ret))
         } else {
@@ -113,7 +113,7 @@ impl FileOperations for XbufOps {
     }
 
     fn release(_this: Box<CloneData>, _file: &File) {
-        pr_debug!("I'm the release ops from the xbuf ops.");
+        // pr_debug!("I'm the release ops from the xbuf ops.");
         // FIXME: put the rros element
     }
 }
@@ -510,7 +510,7 @@ pub fn do_xbuf_write(ring: &mut XbufRing, wd: &mut XbufWdesc, f_flags: i32) -> i
     }
 
     wd.buf_ptr = wd.buf;
-    pr_debug!("do_xbuf_write 1");
+    // pr_debug!("do_xbuf_write 1");
     loop {
         flags = ring.lock();
         avail = ring.fillsz as u32 + ring.wrrsvd;
@@ -548,7 +548,7 @@ pub fn do_xbuf_write(ring: &mut XbufRing, wd: &mut XbufWdesc, f_flags: i32) -> i
                 (ring.bufmem as usize + wroff as usize) as *mut c_char,
                 n.try_into().unwrap(),
             );
-            pr_debug!("the value of xret is {}", xret);
+            // pr_debug!("the value of xret is {}", xret);
             flags = ring.lock();
             if xret != 0 {
                 ret = -(bindings::EFAULT as i32);
@@ -580,11 +580,11 @@ pub fn do_xbuf_write(ring: &mut XbufRing, wd: &mut XbufWdesc, f_flags: i32) -> i
         break;
     }
 
-    pr_debug!("do_xbuf_write 3, after loop");
+    // pr_debug!("do_xbuf_write 3, after loop");
     unsafe {
         rros_schedule();
     }
-    pr_debug!("the ret of do_xbuf_write is {}", ret);
+    // pr_debug!("the ret of do_xbuf_write is {}", ret);
 
     ret
 }
@@ -699,7 +699,7 @@ pub fn xbuf_write<T: IoBufferReader>(filp: &File, data: &mut T) -> i32 {
         xfer: Some(read_from_user),
     };
 
-    pr_debug!("before do_xbuf_write");
+    // pr_debug!("before do_xbuf_write");
     unsafe {
         do_xbuf_write(
             &mut (*xbuf).obnd.ring,
@@ -937,7 +937,7 @@ fn xbuf_factory_build(
     let xbuf = RrosXbuf::new();
     match xbuf {
         Ok(ref _o) => {
-            pr_debug!("there is a uninited xbuf");
+            // pr_debug!("there is a uninited xbuf");
         }
         Err(_e) => {
             pr_err!("new xbuf error");

@@ -3,7 +3,7 @@ use kernel::{prelude::*, spinlock_init, sync::SpinLock};
 
 #[allow(dead_code)]
 pub fn test_rros_insert_tnode() -> Result<usize> {
-    pr_debug!("~~~test_rros_insert_tnode begin~~~");
+    // pr_debug!("~~~test_rros_insert_tnode begin~~~");
     unsafe {
         let tmb = rros_percpu_timers(&RROS_MONO_CLOCK, 0);
         let mut x = SpinLock::new(RrosTimer::new(12));
@@ -24,26 +24,26 @@ pub fn test_rros_insert_tnode() -> Result<usize> {
         let zz = Arc::try_new(z)?;
         let aa = Arc::try_new(a)?;
 
-        pr_debug!("before enqueue_by_index");
+        // pr_debug!("before enqueue_by_index");
         rros_insert_tnode(&mut (*tmb).q, xx);
         rros_insert_tnode(&mut (*tmb).q, yy);
         rros_insert_tnode(&mut (*tmb).q, zz);
         rros_insert_tnode(&mut (*tmb).q, aa);
 
-        pr_debug!("len is {}", (*tmb).q.len());
+        // pr_debug!("len is {}", (*tmb).q.len());
 
         for i in 1..=(*tmb).q.len() {
             let mut _x = (*tmb).q.get_by_index(i).unwrap().value.clone();
-            pr_debug!("data of x is {}", _x.lock().get_date());
+            // pr_debug!("data of x is {}", _x.lock().get_date());
         }
     }
-    pr_debug!("~~~test_rros_insert_tnode end~~~");
+    // pr_debug!("~~~test_rros_insert_tnode end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_rros_enqueue_timer() -> Result<usize> {
-    pr_debug!("~~~test_rros_insert_tnode begin~~~");
+    // pr_debug!("~~~test_rros_insert_tnode begin~~~");
     unsafe {
         let tmb = rros_percpu_timers(&RROS_MONO_CLOCK, 0);
         let mut x = SpinLock::new(RrosTimer::new(12));
@@ -64,27 +64,27 @@ pub fn test_rros_enqueue_timer() -> Result<usize> {
         let zz = Arc::try_new(z)?;
         let aa = Arc::try_new(a)?;
 
-        pr_debug!("before enqueue_by_index");
+        // pr_debug!("before enqueue_by_index");
         rros_enqueue_timer(xx, &mut (*tmb).q);
         rros_enqueue_timer(yy, &mut (*tmb).q);
         rros_enqueue_timer(zz, &mut (*tmb).q);
         rros_enqueue_timer(aa, &mut (*tmb).q);
 
-        pr_debug!("len is {}", (*tmb).q.len());
+        // pr_debug!("len is {}", (*tmb).q.len());
 
         for i in 1..=(*tmb).q.len() {
             let mut _x = (*tmb).q.get_by_index(i).unwrap().value.clone();
-            pr_debug!("data of x is {}", _x.lock().get_date());
+            // pr_debug!("data of x is {}", _x.lock().get_date());
         }
-        pr_debug!("qufan RROS_TIMER_DEQUEUED is {}", !RROS_TIMER_DEQUEUED);
+        // pr_debug!("qufan RROS_TIMER_DEQUEUED is {}", !RROS_TIMER_DEQUEUED);
     }
-    pr_debug!("~~~test_rros_insert_tnode end~~~");
+    // pr_debug!("~~~test_rros_insert_tnode end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_rros_get_timer_gravity() -> Result<usize> {
-    pr_debug!("~~~test_rros_get_timer_gravity begin~~~");
+    // pr_debug!("~~~test_rros_get_timer_gravity begin~~~");
     unsafe {
         let mut x = SpinLock::new(RrosTimer::new(1));
         let pinned = Pin::new_unchecked(&mut x);
@@ -93,21 +93,21 @@ pub fn test_rros_get_timer_gravity() -> Result<usize> {
         xx.lock().set_clock(&mut RROS_MONO_CLOCK as *mut RrosClock);
 
         xx.lock().set_status(RROS_TIMER_KGRAVITY);
-        pr_debug!("kernel gravity is {}", rros_get_timer_gravity(xx.clone()));
+        // pr_debug!("kernel gravity is {}", rros_get_timer_gravity(xx.clone()));
 
         xx.lock().set_status(RROS_TIMER_UGRAVITY);
-        pr_debug!("user gravity is {}", rros_get_timer_gravity(xx.clone()));
+        // pr_debug!("user gravity is {}", rros_get_timer_gravity(xx.clone()));
 
         xx.lock().set_status(0);
-        pr_debug!("irq gravity is {}", rros_get_timer_gravity(xx.clone()));
+        // pr_debug!("irq gravity is {}", rros_get_timer_gravity(xx.clone()));
     }
-    pr_debug!("~~~test_rros_get_timer_gravity end~~~");
+    // pr_debug!("~~~test_rros_get_timer_gravity end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_rros_update_timer_date() -> Result<usize> {
-    pr_debug!("~~~test_rros_update_timer_date begin~~~");
+    // pr_debug!("~~~test_rros_update_timer_date begin~~~");
     unsafe {
         let mut x = SpinLock::new(RrosTimer::new(1));
         let pinned = Pin::new_unchecked(&mut x);
@@ -121,15 +121,15 @@ pub fn test_rros_update_timer_date() -> Result<usize> {
         xx.lock().set_status(RROS_TIMER_UGRAVITY);
 
         rros_update_timer_date(xx.clone());
-        pr_debug!("xx date is {}", xx.lock().get_date());
+        // pr_debug!("xx date is {}", xx.lock().get_date());
     }
-    pr_debug!("~~~test_rros_update_timer_date end~~~");
+    // pr_debug!("~~~test_rros_update_timer_date end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_rros_get_timer_next_date() -> Result<usize> {
-    pr_debug!("~~~test_rros_get_timer_next_date begin~~~");
+    // pr_debug!("~~~test_rros_get_timer_next_date begin~~~");
     unsafe {
         let mut x = SpinLock::new(RrosTimer::new(1));
         let pinned = Pin::new_unchecked(&mut x);
@@ -140,9 +140,9 @@ pub fn test_rros_get_timer_next_date() -> Result<usize> {
         xx.lock().set_periodic_ticks(3);
         xx.lock().set_interval(8);
 
-        pr_debug!("xx next date is {}", rros_get_timer_next_date(xx.clone()));
+        // pr_debug!("xx next date is {}", rros_get_timer_next_date(xx.clone()));
     }
-    pr_debug!("~~~test_rros_get_timer_next_date end~~~");
+    // pr_debug!("~~~test_rros_get_timer_next_date end~~~");
     Ok(0)
 }
 
@@ -179,16 +179,16 @@ pub fn test_timer_at_front() -> Result<usize> {
 
         // Test the first if branch.
         if timer_at_front(zz.clone()) == true {
-            pr_debug!("test_timer_at_front if1 true");
+            // pr_debug!("test_timer_at_front if1 true");
         } else {
-            pr_debug!("test_timer_at_front if1 false");
+            // pr_debug!("test_timer_at_front if1 false");
         }
 
         // Test the second if branch.
         if timer_at_front(yy.clone()) == true {
-            pr_debug!("test_timer_at_front if2 true");
+            // pr_debug!("test_timer_at_front if2 true");
         } else {
-            pr_debug!("test_timer_at_front if2 false");
+            // pr_debug!("test_timer_at_front if2 false");
         }
     }
     Ok(0)
@@ -229,22 +229,22 @@ pub fn test_rros_timer_deactivate() -> Result<usize> {
         zz.lock().set_status(RROS_TIMER_DEQUEUED);
 
         if rros_timer_deactivate(zz.clone()) {
-            pr_debug!("test_rros_timer_deactivate: success");
+            // pr_debug!("test_rros_timer_deactivate: success");
         } else {
-            pr_debug!("test_rros_timer_deactivate: failed");
+            // pr_debug!("test_rros_timer_deactivate: failed");
         }
 
-        pr_debug!(
-            "test_rros_timer_deactivate: len of tmb is {}",
-            (*tmb).q.len()
-        );
+        // pr_debug!(
+        //     "test_rros_timer_deactivate: len of tmb is {}",
+        //     (*tmb).q.len()
+        // );
     }
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_rros_get_timer_expiry() -> Result<usize> {
-    pr_debug!("~~~test_rros_get_timer_expiry begin~~~");
+    // pr_debug!("~~~test_rros_get_timer_expiry begin~~~");
     unsafe {
         let mut x = SpinLock::new(RrosTimer::new(1));
         let pinned = Pin::new_unchecked(&mut x);
@@ -255,15 +255,15 @@ pub fn test_rros_get_timer_expiry() -> Result<usize> {
         xx.lock().set_date(11);
         xx.lock().set_status(0);
 
-        pr_debug!("xx next date is {}", rros_get_timer_expiry(xx.clone()));
+        // pr_debug!("xx next date is {}", rros_get_timer_expiry(xx.clone()));
     }
-    pr_debug!("~~~test_rros_get_timer_expiry end~~~");
+    // pr_debug!("~~~test_rros_get_timer_expiry end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_rros_get_timer_delta() -> Result<usize> {
-    pr_debug!("~~~test_rros_get_timer_delta begin~~~");
+    // pr_debug!("~~~test_rros_get_timer_delta begin~~~");
     unsafe {
         let mut x = SpinLock::new(RrosTimer::new(1));
         let pinned = Pin::new_unchecked(&mut x);
@@ -274,20 +274,20 @@ pub fn test_rros_get_timer_delta() -> Result<usize> {
         xx.lock().set_date(1111111111111);
         xx.lock().set_status(RROS_TIMER_RUNNING);
 
-        pr_debug!("xx delta is {}", rros_get_timer_delta(xx.clone()));
+        // pr_debug!("xx delta is {}", rros_get_timer_delta(xx.clone()));
 
         xx.lock().set_date(0);
         xx.lock().set_status(RROS_TIMER_PERIODIC);
 
-        pr_debug!("xx delta is {}", rros_get_timer_delta(xx.clone()));
+        // pr_debug!("xx delta is {}", rros_get_timer_delta(xx.clone()));
     }
-    pr_debug!("~~~test_rros_get_timer_delta end~~~");
+    // pr_debug!("~~~test_rros_get_timer_delta end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_rros_get_timer_date() -> Result<usize> {
-    pr_debug!("~~~test_rros_get_timer_date begin~~~");
+    // pr_debug!("~~~test_rros_get_timer_date begin~~~");
     unsafe {
         let mut x = SpinLock::new(RrosTimer::new(1));
         let pinned = Pin::new_unchecked(&mut x);
@@ -298,18 +298,18 @@ pub fn test_rros_get_timer_date() -> Result<usize> {
         xx.lock().set_date(11);
         xx.lock().set_status(RROS_TIMER_RUNNING);
 
-        pr_debug!("xx next date is {}", rros_get_timer_date(xx.clone()));
+        // pr_debug!("xx next date is {}", rros_get_timer_date(xx.clone()));
 
         xx.lock().set_status(RROS_TIMER_PERIODIC);
-        pr_debug!("xx next date is {}", rros_get_timer_date(xx.clone()));
+        // pr_debug!("xx next date is {}", rros_get_timer_date(xx.clone()));
     }
-    pr_debug!("~~~test_rros_get_timer_date end~~~");
+    // pr_debug!("~~~test_rros_get_timer_date end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_program_timer() -> Result<usize> {
-    pr_debug!("~~~test_program_timer begin~~~");
+    // pr_debug!("~~~test_program_timer begin~~~");
     unsafe {
         let tmb = rros_percpu_timers(&RROS_MONO_CLOCK, 0);
         let mut x = SpinLock::new(RrosTimer::new(1));
@@ -328,15 +328,15 @@ pub fn test_program_timer() -> Result<usize> {
 
         program_timer(xx.clone(), &mut (*tmb1).q);
 
-        pr_debug!("len of tmb is {}", (*tmb).q.len());
+        // pr_debug!("len of tmb is {}", (*tmb).q.len());
     }
-    pr_debug!("~~~test_program_timer end~~~");
+    // pr_debug!("~~~test_program_timer end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_rros_start_timer() -> Result<usize> {
-    pr_debug!("~~~test_rros_start_timer begin~~~");
+    // pr_debug!("~~~test_rros_start_timer begin~~~");
     unsafe {
         let tmb = rros_percpu_timers(&RROS_MONO_CLOCK, 0);
         let mut x = SpinLock::new(RrosTimer::new(17));
@@ -351,23 +351,23 @@ pub fn test_rros_start_timer() -> Result<usize> {
         xx.lock().set_clock(&mut RROS_MONO_CLOCK as *mut RrosClock);
         xx.lock().set_rq(rq);
         xx.lock().set_base(tmb);
-        pr_debug!("before program_timer");
+        // pr_debug!("before program_timer");
         rros_start_timer(xx.clone(), 333, 222);
 
-        pr_debug!("timer date is {}", xx.lock().get_date());
-        pr_debug!("timer start date is {}", xx.lock().get_start_date());
-        pr_debug!("timer interval is {}", xx.lock().get_interval());
-        pr_debug!("timer status is {}", xx.lock().get_status());
+        // pr_debug!("timer date is {}", xx.lock().get_date());
+        // pr_debug!("timer start date is {}", xx.lock().get_start_date());
+        // pr_debug!("timer interval is {}", xx.lock().get_interval());
+        // pr_debug!("timer status is {}", xx.lock().get_status());
 
-        pr_debug!("len of tmb is {}", (*tmb).q.len());
+        // pr_debug!("len of tmb is {}", (*tmb).q.len());
     }
-    pr_debug!("~~~test_rros_start_timer end~~~");
+    // pr_debug!("~~~test_rros_start_timer end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_stop_timer_locked() -> Result<usize> {
-    pr_debug!("~~~test_stop_timer_locked begin~~~");
+    // pr_debug!("~~~test_stop_timer_locked begin~~~");
     unsafe {
         let tmb = rros_percpu_timers(&RROS_MONO_CLOCK, 0);
         let mut x = SpinLock::new(RrosTimer::new(17));
@@ -383,17 +383,17 @@ pub fn test_stop_timer_locked() -> Result<usize> {
         xx.lock().set_rq(rq);
         xx.lock().set_base(tmb);
         xx.lock().set_status(RROS_TIMER_RUNNING);
-        pr_debug!("before stop_timer_locked");
+        // pr_debug!("before stop_timer_locked");
         stop_timer_locked(xx.clone());
-        pr_debug!("len of tmb is {}", (*tmb).q.len());
+        // pr_debug!("len of tmb is {}", (*tmb).q.len());
     }
-    pr_debug!("~~~test_stop_timer_locked end~~~");
+    // pr_debug!("~~~test_stop_timer_locked end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn test_rros_destroy_timer() -> Result<usize> {
-    pr_debug!("~~~test_rros_destroy_timer begin~~~");
+    // pr_debug!("~~~test_rros_destroy_timer begin~~~");
     unsafe {
         let tmb = rros_percpu_timers(&RROS_MONO_CLOCK, 0);
         let mut x = SpinLock::new(RrosTimer::new(17));
@@ -409,30 +409,30 @@ pub fn test_rros_destroy_timer() -> Result<usize> {
         xx.lock().set_rq(rq);
         xx.lock().set_base(tmb);
         xx.lock().set_status(RROS_TIMER_RUNNING);
-        pr_debug!("before rros_destroy_timer");
+        // pr_debug!("before rros_destroy_timer");
         rros_destroy_timer(xx.clone());
         let xx_lock_rq = xx.lock().get_rq();
         let xx_lock_base = xx.lock().get_base();
         if xx_lock_rq == 0 as *mut RrosRq {
-            pr_debug!("xx rq is none");
+            // pr_debug!("xx rq is none");
         }
         if xx_lock_base == 0 as *mut RrosTimerbase {
-            pr_debug!("xx base is none");
+            // pr_debug!("xx base is none");
         }
-        pr_debug!("len of tmb is {}", (*tmb).q.len());
+        // pr_debug!("len of tmb is {}", (*tmb).q.len());
     }
-    pr_debug!("~~~test_rros_destroy_timer end~~~");
+    // pr_debug!("~~~test_rros_destroy_timer end~~~");
     Ok(0)
 }
 
 #[allow(dead_code)]
 pub fn handler(_timer: &RrosTimer) {
-    pr_info!("success");
+    // pr_info!("success");
 }
 
 #[allow(dead_code)]
 pub fn test_get_handler() -> Result<usize> {
-    pr_debug!("~~~test_get_handler begin~~~");
+    // pr_debug!("~~~test_get_handler begin~~~");
     unsafe {
         let mut x = SpinLock::new(RrosTimer::new(17));
         let pinned = Pin::new_unchecked(&mut x);
@@ -444,6 +444,6 @@ pub fn test_get_handler() -> Result<usize> {
         //let handler = xx.lock().get_handler();
         //handler(xx.lock().deref());
     }
-    pr_debug!("~~~test_get_handler end~~~");
+    // pr_debug!("~~~test_get_handler end~~~");
     Ok(0)
 }

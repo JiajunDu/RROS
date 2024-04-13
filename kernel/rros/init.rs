@@ -90,7 +90,7 @@ module! {
     license: b"GPL v2",
     params: {
         oobcpus_arg: str {
-            default: b"0-3\0",
+            default: b"0-4\0",
             permissions: 0o444,
             description: b"which cpus in the oob",
         },
@@ -163,11 +163,11 @@ fn setup_init_state(init_state_var: &'static str) {
     for init_state in init_states {
         if init_state.label == init_state_var {
             set_rros_state(init_state.state);
-            pr_info!("{}", init_state_var);
+            // pr_info!("{}", init_state_var);
             return;
         }
     }
-    pr_warn!("{} {}", warn_bad_state, init_state_var);
+    // // pr_warn!("{} {}", warn_bad_state, init_state_var);
 }
 
 fn set_rros_state(state: RrosRunStates) {
@@ -177,20 +177,20 @@ fn set_rros_state(state: RrosRunStates) {
 fn init_core() -> Result<Pin<Box<chrdev::Registration<{ factory::NR_FACTORIES }>>>> {
     let res =
         irqstage::enable_oob_stage(CStr::from_bytes_with_nul("rros\0".as_bytes())?.as_char_ptr());
-    pr_info!("hello");
+    // pr_info!("hello");
     match res {
         Ok(_o) => (),
         Err(_e) => {
-            pr_warn!("rros cannot be enabled");
+            // // pr_warn!("rros cannot be enabled");
             return Err(kernel::Error::EINVAL);
         }
     }
-    pr_info!("hella");
+    // pr_info!("hella");
     let res = rros_init_memory();
     match res {
         Ok(_o) => (),
         Err(_e) => {
-            pr_warn!("memory init wrong");
+            // // pr_warn!("memory init wrong");
             return Err(_e);
         }
     }
@@ -199,17 +199,17 @@ fn init_core() -> Result<Pin<Box<chrdev::Registration<{ factory::NR_FACTORIES }>
     match res {
         Ok(_o) => fac_reg = _o,
         Err(_e) => {
-            pr_warn!("factory init wrong");
+            // pr_warn!("factory init wrong");
             return Err(_e);
         }
     }
-    pr_info!("haly");
+    // pr_info!("haly");
 
     let res = rros_clock_init();
     match res {
         Ok(_o) => (),
         Err(_e) => {
-            pr_warn!("clock init wrong");
+            // pr_warn!("clock init wrong");
             return Err(_e);
         }
     }
@@ -218,18 +218,18 @@ fn init_core() -> Result<Pin<Box<chrdev::Registration<{ factory::NR_FACTORIES }>
     match res {
         Ok(_o) => (),
         Err(_e) => {
-            pr_warn!("sched init wrong");
+            // pr_warn!("sched init wrong");
             return Err(_e);
         }
     }
 
     let _rq = this_rros_rq();
-    pr_debug!("rq add is {:p}", this_rros_rq());
+    // pr_debug!("rq add is {:p}", this_rros_rq());
     let res = rros_enable_tick();
     match res {
         Ok(_o) => (),
         Err(_e) => {
-            pr_warn!("tick enable wrong");
+            // pr_warn!("tick enable wrong");
             return Err(_e);
         }
     }
@@ -238,7 +238,7 @@ fn init_core() -> Result<Pin<Box<chrdev::Registration<{ factory::NR_FACTORIES }>
     match res {
         Ok(_o) => (),
         Err(_e) => {
-            pr_warn!("dovetail start wrong");
+            // pr_warn!("dovetail start wrong");
         }
     }
 
@@ -253,7 +253,7 @@ fn test_clock() {
     match res {
         Ok(_o) => (),
         Err(_e) => {
-            pr_warn!("clock timers adjust wrong");
+            // pr_warn!("clock timers adjust wrong");
         }
     }
     //clock_test::test_rros_stop_timers();
@@ -284,7 +284,7 @@ fn test_double_linked_list() {
     match res {
         Ok(_o) => (),
         Err(_e) => {
-            pr_warn!("enqueue by index wrong");
+            // pr_warn!("enqueue by index wrong");
         }
     }
 }
@@ -306,7 +306,7 @@ fn test_sched() {
     match res {
         Ok(_o) => (),
         Err(_e) => {
-            pr_warn!("set resched wrong");
+            // pr_warn!("set resched wrong");
         }
     }
 }
@@ -317,7 +317,7 @@ fn test_fifo() {
     match res {
         Ok(_o) => (),
         Err(_e) => {
-            pr_warn!("enqueue fifo wrong");
+            // pr_warn!("enqueue fifo wrong");
         }
     }
 }
@@ -330,12 +330,12 @@ fn test_lantency() {
 }
 impl KernelModule for Rros {
     fn init() -> Result<Self> {
-        pr_info!("Hello world from rros!\n");
+        // pr_info!("Hello world from rros!\n");
         let init_state_arg_str = str::from_utf8(init_state_arg.read())?;
         setup_init_state(init_state_arg_str);
 
         if RROS_RUNSTATE.load(Ordering::Relaxed) != RrosRunStates::RrosStateWarmup as u8 {
-            pr_warn!("disabled on kernel command line\n");
+            // pr_warn!("disabled on kernel command line\n");
             return Err(kernel::Error::EINVAL);
         }
 
@@ -353,9 +353,9 @@ impl KernelModule for Rros {
                 RROS_OOB_CPUS.cpulist_parse(CStr::from_bytes_with_nul(oobcpus_arg.read())?.as_char_ptr())
             };
             match res {
-                Ok(_o) => (pr_info!("load parameters {}\n", str::from_utf8(oobcpus_arg.read())?)),
+                Ok(_o) => {},// pr_info!("load parameters {}\n", str::from_utf8(oobcpus_arg.read())?)),
                 Err(_e) => {
-                    pr_warn!("wrong oobcpus_arg");
+                    // pr_warn!("wrong oobcpus_arg");
                     unsafe {
                         RROS_OOB_CPUS.cpumask_copy(&cpu_online_mask);
                     }
@@ -383,7 +383,7 @@ impl KernelModule for Rros {
         match ret {
             Ok(_o) => (),
             Err(_e) => {
-                pr_warn!("net init wrong");
+                // pr_warn!("net init wrong");
                 return Err(_e);
             }
         }
@@ -391,11 +391,11 @@ impl KernelModule for Rros {
         test_mem();
         match res {
             Ok(_o) => {
-                pr_info!("Success boot the rros.");
+                // pr_info!("Success boot the rros.");
                 fac_reg = _o;
             }
             Err(_e) => {
-                pr_warn!("Boot failed!\n");
+                // pr_warn!("Boot failed!\n");
                 return Err(_e);
             }
         }
@@ -403,11 +403,11 @@ impl KernelModule for Rros {
 
         // let mut rros_kthread1 = rros_kthread::new(fn1);
         // let mut rros_kthread2 = rros_kthread::new(fn2);
-        // pr_debug!("before thread 1");
+        // // pr_debug!("before thread 1");
         // kthread::kthread_run(Some(threadfn), &mut rros_kthread1 as *mut rros_kthread as *mut c_types::c_void, c_str!("%s").as_char_ptr(),
         //  format_args!("hongyu1"));
 
-        //  pr_debug!("between 1 and 2");
+        //  // pr_debug!("between 1 and 2");
 
         // kthread::kthread_run(Some(threadfn), &mut rros_kthread2 as *mut rros_kthread as *mut c_types::c_void, c_str!("%s").as_char_ptr(),
         //  format_args!("hongyu2"));
@@ -420,11 +420,11 @@ impl KernelModule for Rros {
 
 #[no_mangle]
 unsafe extern "C" fn helloworld() {
-    pr_info!("hello world! from C to rust");
+    // pr_info!("hello world! from C to rust");
 }
 
 impl Drop for Rros {
     fn drop(&mut self) {
-        pr_info!("Bye world from rros!\n");
+        // pr_info!("Bye world from rros!\n");
     }
 }

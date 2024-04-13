@@ -81,7 +81,7 @@ pub fn is_oob_syscall(regs: PtRegs) -> bool {
 }
 
 pub fn oob_syscall_nr(regs: PtRegs) -> u32 {
-    unsafe { pr_debug!("the sys call number is {}", (*(regs.ptr)).syscallno as u32) };
+    unsafe { };// pr_debug!("the sys call number is {}", (*(regs.ptr)).syscallno as u32) };
     (unsafe { (*regs.ptr).syscallno as u32 } & !bindings::__OOB_SYSCALL_BIT as u32)
 }
 

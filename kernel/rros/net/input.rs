@@ -67,7 +67,7 @@ pub fn rros_net_do_rx(mut dev: NetDevice) {
     loop {
         // TODO:
         let ret = est.rstate.rx_flag.wait();
-        pr_debug!("rros_net_do_rx");
+        // pr_debug!("rros_net_do_rx");
         if ret != 0 {
             break;
         }
@@ -90,9 +90,9 @@ pub fn rros_net_do_rx(mut dev: NetDevice) {
             __bindgen_anon_1.list
         );
         unsafe { rros_schedule() };
-        pr_debug!("end of rros_net_do_rx");
+        // pr_debug!("end of rros_net_do_rx");
     }
-    pr_debug!("rros_net_do_rx exit\n");
+    // pr_debug!("rros_net_do_rx exit\n");
 }
 
 // NETIF
@@ -104,21 +104,21 @@ pub fn netif_oob_run(dev: *mut bindings::net_device) {
         .rstate
         .rx_flag
         .raise();
-    pr_debug!("netif_oob_run");
+    // pr_debug!("netif_oob_run");
 }
 
 #[no_mangle]
 fn netif_oob_deliver(skb: *mut bindings::sk_buff) -> bool {
-    pr_debug!("netif_oob_deliver");
+    // pr_debug!("netif_oob_deliver");
     extern "C" {
         fn rust_helper_eth_type_vlan(eth_type: be16) -> bool;
     }
     let skb = RrosSkBuff::from_raw_ptr(skb);
     let protocol: u32 = u16::from(be16::new(skb.protocol)).into();
-    pr_debug!("protocol is {}", protocol);
+    // pr_debug!("protocol is {}", protocol);
     match protocol {
         bindings::ETH_P_IP => {
-            pr_debug!("accept");
+            // pr_debug!("accept");
             rros_net_ether_accept(skb)
             // rros_net_ether_accept(skb) // TODO:
         }
@@ -128,10 +128,10 @@ fn netif_oob_deliver(skb: *mut bindings::sk_buff) -> bool {
              * capabilities, check the ethertype directly.
              */
             if unsafe { rust_helper_eth_type_vlan(be16::new(skb.protocol)) } {
-                pr_debug!("true");
+                // pr_debug!("true");
                 rros_net_ether_accept(skb)
             } else {
-                pr_debug!("false");
+                // pr_debug!("false");
                 false
             }
         }

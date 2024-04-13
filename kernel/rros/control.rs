@@ -49,7 +49,7 @@ impl FileOpener<u8> for ControlOps {
         // there should be some checks
         let mut data = CloneData::default();
         data.ptr = shared as *const u8 as *mut u8;
-        pr_debug!("open control device success");
+        // pr_debug!("open control device success");
         Ok(Box::try_new(data)?)
     }
 }
@@ -61,22 +61,22 @@ impl FileOperations for ControlOps {
 
     // fn ioctl
     fn ioctl(_this: &CloneData, file: &File, cmd: &mut IoctlCommand) -> Result<i32> {
-        pr_debug!("I'm the ioctl ops of the control factory");
+        // pr_debug!("I'm the ioctl ops of the control factory");
         // cmd.dispatch::<Self>(this, file)
         let ret = control_ioctl(file, cmd);
-        pr_debug!("the value of ret is {}", ret.unwrap());
+        // pr_debug!("the value of ret is {}", ret.unwrap());
         ret
     }
 
     // fn oob_ioctl
     fn oob_ioctl(_this: &CloneData, file: &File, cmd: &mut IoctlCommand) -> Result<i32> {
-        pr_debug!("I'm the ioctl ops of the control factory");
+        // pr_debug!("I'm the ioctl ops of the control factory");
         let ret = control_common_ioctl(file, cmd);
         ret
     }
 
     fn mmap(_this: &CloneData, file: &File, vma: &mut bindings::vm_area_struct) -> Result {
-        pr_debug!("I'm the mmap ops of the control factory");
+        // pr_debug!("I'm the mmap ops of the control factory");
         let ret = control_mmap(file, vma);
         ret
     }
@@ -133,21 +133,21 @@ fn control_ioctl(file: &File, cmd: &mut IoctlCommand) -> Result<i32> {
             // TODO: There should be a function rros_detect_fpu() related to the arm64 architecture, the result of the function is 0.
             info.fpu_features = 0;
             unsafe {
-                pr_debug!(
-                    "the value of info.shm_size and RROS_SHM_SIZE is {}, {}",
-                    info.shm_size,
-                    RROS_SHM_SIZE
-                )
+                // pr_debug!(
+                //     "the value of info.shm_size and RROS_SHM_SIZE is {}, {}",
+                //     info.shm_size,
+                //     RROS_SHM_SIZE
+                // )
             };
             unsafe {
                 info.shm_size = RROS_SHM_SIZE as u64;
             }
             unsafe {
-                pr_debug!(
-                    "the value of info.shm_size and RROS_SHM_SIZE is {}, {}",
-                    info.shm_size,
-                    RROS_SHM_SIZE
-                )
+                // pr_debug!(
+                //     "the value of info.shm_size and RROS_SHM_SIZE is {}, {}",
+                //     info.shm_size,
+                //     RROS_SHM_SIZE
+                // )
             };
             // ret = cmd.user_slice.take().ok_or(Error::EINVAL).writer();
             let data = cmd.user_slice.take().ok_or(Error::EINVAL);

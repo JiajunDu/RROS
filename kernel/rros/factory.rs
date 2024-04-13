@@ -205,7 +205,7 @@ impl FileOperations for Tmpops {
         _data: &mut T,
         _offset: u64,
     ) -> Result<usize> {
-        pr_debug!("I'm the read ops of the rros tmp factory.");
+        // pr_debug!("I'm the read ops of the rros tmp factory.");
         Ok(1)
     }
 }
@@ -355,7 +355,7 @@ fn create_element_device(
         let mut e_mut = e_clone.borrow_mut();
         e_mut.refs += 1;
         let filp = e_mut.fpriv.filp.as_mut().unwrap().get_ptr();
-        pr_debug!("the address of filp location 7 is {:p}, {:p}", filp, &filp);
+        // pr_debug!("the address of filp location 7 is {:p}, {:p}", filp, &filp);
 
         // if (!rros_element_is_public(e) && !rros_element_has_coredev(e)) {
         // if rros_element_is_public(e.clone()) == false && rros_element_has_coredev(e.clone()) == false {
@@ -363,7 +363,7 @@ fn create_element_device(
         // e.fpriv.efd.commit(File{ptr: filp});
         // }
         fd_install(e_mut.fpriv.efd.reserved_fd(), filp);
-        pr_debug!("the address of filp location 8 is {:p}, {:p}", filp, &filp);
+        // pr_debug!("the address of filp location 8 is {:p}, {:p}", filp, &filp);
     }
 
     Ok(0)
@@ -483,7 +483,7 @@ fn do_element_visibility(
         bindings::O_RDWR as i32,
     );
 
-    pr_debug!("the address of filp location 1 is {:p}, {:p}", filp, &filp);
+    // pr_debug!("the address of filp location 1 is {:p}, {:p}", filp, &filp);
     // /*
     // * Create a private user element, passing the real fops so
     // * that FMODE_CAN_READ/WRITE are set accordingly by the vfs.
@@ -508,7 +508,7 @@ fn do_element_visibility(
     // */
     // let ret = bind_file_to_element(&mut File{ptr: filp}, e.clone());
     let _ret = bind_file_to_element(filp, e.clone());
-    pr_debug!("the address of filp location 4 is {:p}, {:p}", filp, &filp);
+    // pr_debug!("the address of filp location 4 is {:p}, {:p}", filp, &filp);
     // if (ret) {
     // filp_close(filp, current->files);
     // /*
@@ -540,14 +540,14 @@ fn do_element_visibility(
     // };
     // efd = get_unused_fd_flags(O_RDWR|O_CLOEXEC);
 
-    pr_debug!("the address of filp location 5 is {:p}, {:p}", filp, &filp);
+    // pr_debug!("the address of filp location 5 is {:p}, {:p}", filp, &filp);
     e_mut.fpriv.filp = Some(File { ptr: filp });
-    pr_debug!(
-        "the address of filp location 6 is {:p}, {:p}",
-        e_mut.fpriv.filp.as_ref().unwrap().ptr,
-        &(&(e_mut).fpriv.filp.as_ref().unwrap().ptr)
-    );
-    pr_debug!("efd: {}", efd.reserved_fd());
+    // pr_debug!(
+    //     "the address of filp location 6 is {:p}, {:p}",
+    //     e_mut.fpriv.filp.as_ref().unwrap().ptr,
+    //     &(&(e_mut).fpriv.filp.as_ref().unwrap().ptr)
+    // );
+    // pr_debug!("efd: {}", efd.reserved_fd());
     e_mut.fpriv.efd = efd;
     // (e_borrow.clone_flags & RROS_CLONE_COREDEV) == RROS_CLONE_COREDEV;
 
@@ -579,13 +579,13 @@ pub fn bind_file_to_element(
     // 	if (fbind == NULL)
     // 		return -ENOMEM;
 
-    pr_debug!("the address of filp location 2 is {:p}, {:p}", filp, &filp);
+    // pr_debug!("the address of filp location 2 is {:p}, {:p}", filp, &filp);
     let _ret = fbind.rfile.borrow_mut().rros_open_file(filp)?;
-    pr_debug!("the address of filp location 3 is {:p}, {:p}", filp, &filp);
-    pr_debug!(
-        "the address of fbind.rfile.filp.oob_data is {:p}",
-        fbind.rfile.as_ptr()
-    );
+    // pr_debug!("the address of filp location 3 is {:p}, {:p}", filp, &filp);
+    // pr_debug!(
+    //     "the address of fbind.rfile.filp.oob_data is {:p}",
+    //     fbind.rfile.as_ptr()
+    // );
     // let ret = rros_open_file(&fbind.efile, filp.get_ptr());
     // 	ret = rros_open_file(&fbind->efile, filp);
     // 	if (ret) {
@@ -600,16 +600,16 @@ pub fn bind_file_to_element(
     let fbind_ptr = Box::into_raw(fbind);
     // unsafe{ (*((*fbind_ptr).rfile.borrow_mut().filp)).oob_data = (*fbind_ptr).rfile.as_ptr() as *const RrosFile as _;}
     unsafe {
-        pr_debug!(
-            "the address of fbind_ptr.rfile.filp.oob_data is {:p}",
-            (*((*fbind_ptr).rfile.borrow_mut().filp)).oob_data
-        )
+        // pr_debug!(
+        //     "the address of fbind_ptr.rfile.filp.oob_data is {:p}",
+        //     (*((*fbind_ptr).rfile.borrow_mut().filp)).oob_data
+        // )
     };
     unsafe {
-        pr_debug!(
-            "the address of filp.oob_data is {:p}",
-            (*fbind_ptr).rfile.as_ptr()
-        )
+        // pr_debug!(
+        //     "the address of filp.oob_data is {:p}",
+        //     (*fbind_ptr).rfile.as_ptr()
+        // )
     };
 
     //    filp.set_private_data(fbind_ptr as *mut c_types::c_void);
@@ -864,7 +864,7 @@ fn rros_create_factory(
                     }
                     Ok("observable") => {
                         unimplemented!();
-                        // pr_info!("[observable] in function: rros_create_factory");
+                        // // pr_info!("[observable] in function: rros_create_factory");
                         // let mut ele_chrdev_reg: Pin<
                         //     Box<
                         //         chrdev::Registration<{ observable::CONFIG_RROS_NR_OBSERVABLE }>,
@@ -879,10 +879,10 @@ fn rros_create_factory(
                         //     .register::<observable::ObservableOps>()?;
                     }
                     Ok(_) => {
-                        pr_info!("not yet implemented");
+                        // pr_info!("not yet implemented");
                     }
                     Err(_e) => {
-                        pr_info!("should not meet here");
+                        // pr_info!("should not meet here");
                     }
                 }
                 // no need to call register here
@@ -969,7 +969,7 @@ impl FileOpener<u8> for CloneOps {
                 .kgid = Some(b);
         }
         // bindings::stream_open();
-        pr_debug!("open clone success");
+        // pr_debug!("open clone success");
         Ok(Box::try_new(data)?)
     }
     // fn open<T: IoBufferWriter>(
@@ -978,7 +978,7 @@ impl FileOpener<u8> for CloneOps {
     //     _data: &mut T,
     //     _offset: u64,
     // ) -> Result<usize> {
-    //     pr_debug!("I'm the open ops from the clone ops.");
+    //     // pr_debug!("I'm the open ops from the clone ops.");
 
     //     unsafe {
     //         (*thread::RROS_THREAD_FACTORY.get_locked_data().get()).inside.as_ref().unwrap().kuid = i
@@ -1000,17 +1000,17 @@ impl FileOperations for CloneOps {
         _data: &mut T,
         _offset: u64,
     ) -> Result<usize> {
-        pr_debug!("I'm the read ops from the clone ops.");
+        // pr_debug!("I'm the read ops from the clone ops.");
         Ok(1)
     }
 
     fn release(_this: Box<CloneData>, _file: &File) {
-        pr_debug!("I'm the release ops from the clone ops.");
+        // pr_debug!("I'm the release ops from the clone ops.");
         // FIXME: put the rros element
     }
 
     fn ioctl(_this: &CloneData, file: &File, cmd: &mut IoctlCommand) -> Result<i32> {
-        pr_debug!("I'm the unlock_ioctl ops from the clone ops.");
+        // pr_debug!("I'm the unlock_ioctl ops from the clone ops.");
         // FIXME: use the IoctlCommand in the right way
         ioctl_clone_device(file, cmd.cmd, cmd.arg)?;
         Ok(0)
@@ -1157,7 +1157,7 @@ impl FileOperations for RRosRustFile {
         _data: &mut T,
         _offset: u64,
     ) -> Result<usize> {
-        pr_debug!("I'm the read ops of the rros factory.");
+        // pr_debug!("I'm the read ops of the rros factory.");
         Ok(1)
     }
 }
@@ -1261,7 +1261,7 @@ pub fn ioctl_clone_device(file: &File, _cmd: u32, arg: usize) -> Result<usize> {
     //     return -EBUSY;
 
     // TODO: user parameters
-    pr_debug!("size is {}", size_of::<RrosCloneReq>());
+    // pr_debug!("size is {}", size_of::<RrosCloneReq>());
     let mut real_req = RrosCloneReq::new(0 as *const c_types::c_char, 0 as *mut c_types::c_void);
     let res = unsafe {
         rust_helper_copy_from_user(
@@ -1280,13 +1280,13 @@ pub fn ioctl_clone_device(file: &File, _cmd: u32, arg: usize) -> Result<usize> {
     // let mut real_req: RrosCloneReq = unsafe{*ptr::slice_from_raw_parts_mut(core::mem::transmute(req.as_ptr()), req.len())};
     // TODO: fix the unsafe code
     // let mut real_req: RrosCloneReq = unsafe{core::mem::transmute_copy(&req.as_ptr())};
-    pr_debug!("real_req {}", real_req.clone_flags);
-    pr_debug!("real_req {}", real_req.efd);
-    pr_debug!("real_req {}", real_req.eids.fundle);
-    pr_debug!("real_req {}", real_req.eids.minor);
-    pr_debug!("real_req {}", real_req.eids.state_offset);
-    pr_debug!("real_req {:p}", real_req.name);
-    pr_debug!("real_req {:p}", real_req.attrs);
+    // pr_debug!("real_req {}", real_req.clone_flags);
+    // pr_debug!("real_req {}", real_req.efd);
+    // pr_debug!("real_req {}", real_req.eids.fundle);
+    // pr_debug!("real_req {}", real_req.eids.minor);
+    // pr_debug!("real_req {}", real_req.eids.state_offset);
+    // pr_debug!("real_req {:p}", real_req.name);
+    // pr_debug!("real_req {:p}", real_req.attrs);
 
     // u_req = (typeof(u_req))arg;
     // ret = copy_from_user(&req, u_req, sizeof(req));
@@ -1299,16 +1299,16 @@ pub fn ioctl_clone_device(file: &File, _cmd: u32, arg: usize) -> Result<usize> {
     // return -EINVAL;
 
     let u_attrs = real_req.attrs as *mut u8;
-    pr_debug!("the u_attrs is {:p}", u_attrs);
+    // pr_debug!("the u_attrs is {:p}", u_attrs);
     // u_attrs = rros_valptr64(req.attrs_ptr, void);
     let cstr_u_name = unsafe { CStr::from_char_ptr(u_name as *const c_types::c_char) };
     // FIXME: update the cdev logic to use container_of && update the uname
     // fac = container_of(filp->f_inode->i_cdev, struct rros_factory, cdev);
     let fdname = file.get_parent_name().unwrap();
-    pr_debug!("the value is {:?} ", cstr_u_name[0]);
-    pr_debug!("ioctl_clone_device: clone type is {}", fdname);
+    // pr_debug!("the value is {:?} ", cstr_u_name[0]);
+    // pr_debug!("ioctl_clone_device: clone type is {}", fdname);
     let e: Rc<RefCell<RrosElement>> = if fdname == "xbuf" {
-        pr_debug!("ioctl_clone_device: xbuf clone");
+        // pr_debug!("ioctl_clone_device: xbuf clone");
         unsafe {
             (*xbuf::RROS_XBUF_FACTORY.locked_data().get())
                 .build
@@ -1321,7 +1321,7 @@ pub fn ioctl_clone_device(file: &File, _cmd: u32, arg: usize) -> Result<usize> {
             )
         }
     } else if fdname == "proxy" {
-        pr_debug!("ioctl_clone_device: proxy clone");
+        // pr_debug!("ioctl_clone_device: proxy clone");
         unsafe {
             (*proxy::RROS_PROXY_FACTORY.locked_data().get())
                 .build
@@ -1334,7 +1334,7 @@ pub fn ioctl_clone_device(file: &File, _cmd: u32, arg: usize) -> Result<usize> {
             )
         }
     } else {
-        pr_debug!("maybe a thread");
+        // pr_debug!("maybe a thread");
         unsafe {
             (*thread::RROS_THREAD_FACTORY.locked_data().get())
                 .build
@@ -1349,8 +1349,8 @@ pub fn ioctl_clone_device(file: &File, _cmd: u32, arg: usize) -> Result<usize> {
     };
     //real_req.clone_flags as i32
 
-    // unsafe{pr_debug!("4 uninit_thread: x ref is {}", Arc::strong_count(&thread::UTHREAD.clone().unwrap()));}
-    // unsafe{pr_debug!("4.5 uninit_thread: x ref is {}", Arc::strong_count(&thread::UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("4 uninit_thread: x ref is {}", Arc::strong_count(&thread::UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("4.5 uninit_thread: x ref is {}", Arc::strong_count(&thread::UTHREAD.clone().unwrap()));}
     // e = fac->build(fac, u_name, u_attrs, req.clone_flags, &state_offset);
     // if (IS_ERR(e))
     // return PTR_ERR(e);
@@ -1362,13 +1362,13 @@ pub fn ioctl_clone_device(file: &File, _cmd: u32, arg: usize) -> Result<usize> {
 
     // TODO: create the element device
     let _ret = if fdname == "xbuf" {
-        pr_debug!("ioctl_clone_device: xbuf element create");
+        // pr_debug!("ioctl_clone_device: xbuf element create");
         create_element_device(e.clone(), unsafe { &mut xbuf::RROS_XBUF_FACTORY })
     } else if fdname == "proxy" {
-        pr_debug!("ioctl_clone_device: proxy element create");
+        // pr_debug!("ioctl_clone_device: proxy element create");
         create_element_device(e.clone(), unsafe { &mut proxy::RROS_PROXY_FACTORY })
     } else {
-        pr_debug!("maybe a thread");
+        // pr_debug!("maybe a thread");
         create_element_device(e.clone(), unsafe { &mut thread::RROS_THREAD_FACTORY })
     };
     let e_clone = e.clone();
@@ -1402,31 +1402,31 @@ pub fn ioctl_clone_device(file: &File, _cmd: u32, arg: usize) -> Result<usize> {
         // let val = (*e).minor;
         // val = e->minor;
         // ret |= rust_helper_put_user(val as u32, &mut real_req.eids.minor as *mut u32);
-        pr_debug!("the ret is {}", ret);
+        // pr_debug!("the ret is {}", ret);
         // ret |= put_user(val, &u_req->eids.minor);
         // let val = (*e).fundle;
         // val = e->fundle;
         // ret |= rust_helper_put_user(val, &mut real_req.eids.fundle as *mut u32);
-        // pr_debug!("the ret is {}", ret);
+        // // pr_debug!("the ret is {}", ret);
         // ret |= put_user(val, &u_req->eids.fundle);
         // ret |= rust_helper_put_user(state_offset, &mut real_req.eids.state_offset as *mut u32);
-        // pr_debug!("the ret is {}", ret);
+        // // pr_debug!("the ret is {}", ret);
         // ret |= put_user(state_offset, &u_req->eids.state_offset);
         let val = &mut e_mut.fpriv.efd;
         // let val = &mut e_mut.fpriv.efd.reserved_fd();
-        pr_debug!("the val is {}", val.reserved_fd());
+        // pr_debug!("the val is {}", val.reserved_fd());
         ret |= rust_helper_put_user(
             val.reserved_fd() as u32,
             &mut (*(arg as *mut RrosCloneReq)).efd as *mut i32 as *mut u32,
         );
-        pr_debug!("the ret is {}", ret);
+        // pr_debug!("the ret is {}", ret);
         // ret |= put_user(val, &u_req->efd);
     }
-    // pr_debug!("the ret is {}", ret);
+    // // pr_debug!("the ret is {}", ret);
     // if ret!=0{
     // return Err(kernel::Error::EFAULT);
     // }
-    // unsafe{pr_debug!("5 uninit_thread: x ref is {}", Arc::strong_count(&thread::UTHREAD.clone().unwrap()));}
+    // unsafe{// pr_debug!("5 uninit_thread: x ref is {}", Arc::strong_count(&thread::UTHREAD.clone().unwrap()));}
     Ok(0)
     // return ret ? -EFAULT : 0;
     // }

@@ -413,9 +413,9 @@ impl RrosNetProto for EthernetRrosNetProto {
                 return -(bindings::EWOULDBLOCK as isize);
             }
 
-            pr_debug!("~~~~~~~~~~ wait for input;");
+            // pr_debug!("~~~~~~~~~~ wait for input;");
             sock.input_wait.locked_add(timeout, tmode);
-            pr_debug!("~~~~~~~~~~ wait for input;2");
+            // pr_debug!("~~~~~~~~~~ wait for input;2");
             sock.input_wait.lock.raw_spin_unlock_irqrestore(flags);
             ret = sock.input_wait.wait_schedule();
             if ret != 0 {
