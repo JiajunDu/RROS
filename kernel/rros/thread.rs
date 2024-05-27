@@ -759,12 +759,14 @@ pub fn pin_to_initial_cpu(thread: Arc<SpinLock<RrosThread>>) {
     let current_ptr = task::Task::current_ptr();
 
     let mut cpu: u32 = task::Task::task_cpu(current_ptr as *const _);
-    pr_warn!("[DJJSMP] old cpu is: {:?}", cpu);
+    // pr_warn!("[DJJSMP] old cpu is: {:?}", cpu);
     if unsafe { (*thread.locked_data().get()).affinity.cpumask_test_cpu(cpu) } == false {
         cpu = unsafe { (*thread.locked_data().get()).affinity.cpumask_first() as u32 };
     }
 
-    pr_warn!("[DJJSMP] new cpu is: {:?}", cpu);
+    let name = unsafe { (*thread.locked_data().get()).name };
+
+    pr_warn!("[DJJSMP] thread name: {:?}, cpu is: {:?}", name, cpu);
 
     unsafe { bindings::set_cpus_allowed_ptr(current_ptr, cpumask::CpumaskT::cpumask_of(cpu) as *const _); }
 
@@ -782,7 +784,7 @@ fn map_kthread_self(kthread: &mut RrosKthread) -> Result<usize> {
     // TODO: add the support of the pin_to_initial_cpu
     pin_to_initial_cpu(thread.clone());
 
-    let ret;
+    // let ret;
     unsafe {
         // pr_debug!(
         //     "map_kthread_self: the altched add is {:p}",
@@ -805,10 +807,10 @@ fn map_kthread_self(kthread: &mut RrosKthread) -> Result<usize> {
         rros_release_thread(thread.clone(), T_DORMANT as u32, 0 as u32);
 
         // ret = rros_switch_oob(kthread);
-        ret = rros_switch_oob();
-        if let Err(_e) = ret {
-            kthread.status = -1;
-        }
+        // ret = rros_switch_oob();
+        // if let Err(_e) = ret {
+        //     kthread.status = -1;
+        // }
         // pr_debug!("map_kthread_self: after rros_switch_oob");
         //b kernel/rros/thread.rs:531
         kthread.irq_work.init_irq_work(wakeup_kthread_parent)?;
@@ -816,7 +818,7 @@ fn map_kthread_self(kthread: &mut RrosKthread) -> Result<usize> {
     }
     // enqueue_new_thread(curr);// This function has little impact.
     rros_hold_thread(kthread, T_DORMANT);
-    return ret;
+    return Ok(0);
 }
 
 extern "C" {
@@ -1087,7 +1089,7 @@ pub fn rros_run_kthread(kthread: &mut RrosKthread, fmt: &'static CStr) -> Result
         iattr.affinity = &RROS_OOB_CPUS as *const CpumaskT;
         iattr.sched_class = Some(&RROS_SCHED_FIFO);
         // iattr.sched_class = Some(&RROS_SCHED_TP);
-        let prio = 98;
+        let prio = 99;
         let sched_param = Arc::try_new(SpinLock::new(RrosSchedParam::new()))?;
         (*sched_param.locked_data().get()).fifo.prio = prio;
         (*sched_param.locked_data().get()).idle.prio = prio;

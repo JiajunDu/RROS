@@ -86,7 +86,7 @@ impl ClockEventDevice {
     pub fn from_proxy_device(ced: *mut bindings::clock_event_device) -> Result<Self> {
         let ptr = ced;
         if ptr.is_null() {
-            pr_warn!("get proxy_device error!");
+            // pr_warn!("get proxy_device error!");
             return Err(Error::EINVAL);
         }
         Ok(Self { ptr })

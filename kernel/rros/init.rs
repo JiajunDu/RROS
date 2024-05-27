@@ -90,7 +90,7 @@ module! {
     license: b"GPL v2",
     params: {
         oobcpus_arg: str {
-            default: b"0-4\0",
+            default: b"0-7\0",
             permissions: 0o444,
             description: b"which cpus in the oob",
         },
@@ -372,11 +372,12 @@ impl KernelModule for Rros {
         let res = init_core(); //*sysheap_size_arg.read()
         let fac_reg;
 
+        smp_test::test_smp();
         // test_timer();
         // test_double_linked_list();
 
         // test_clock();
-        test_thread();
+        // test_thread();
         //test_double_linked_list();
         // wait::wait_test();
         let ret = net::init();
@@ -388,7 +389,7 @@ impl KernelModule for Rros {
             }
         }
 
-        test_mem();
+        // test_mem();
         match res {
             Ok(_o) => {
                 // pr_info!("Success boot the rros.");
@@ -399,7 +400,7 @@ impl KernelModule for Rros {
                 return Err(_e);
             }
         }
-        test_lantency();
+        // test_lantency();
 
         // let mut rros_kthread1 = rros_kthread::new(fn1);
         // let mut rros_kthread2 = rros_kthread::new(fn2);
@@ -411,8 +412,6 @@ impl KernelModule for Rros {
 
         // kthread::kthread_run(Some(threadfn), &mut rros_kthread2 as *mut rros_kthread as *mut c_types::c_void, c_str!("%s").as_char_ptr(),
         //  format_args!("hongyu2"));
-
-        smp_test::test_smp();
 
         Ok(Rros { factory: fac_reg })
     }

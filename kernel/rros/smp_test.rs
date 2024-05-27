@@ -2,7 +2,7 @@ use crate::{
     clock::{
         RROS_MONO_CLOCK, RROS_REALTIME_CLOCK,
     },
-    thread::KthreadRunner,
+    thread::{rros_sleep, KthreadRunner},
 };
 
 use kernel::{
@@ -11,83 +11,70 @@ use kernel::{
     bindings,
 };
 
-static mut SMP_KTHREAD_RUNNER_1: KthreadRunner = KthreadRunner::new_empty();
-static mut SMP_KTHREAD_RUNNER_2: KthreadRunner = KthreadRunner::new_empty();
-static mut SMP_KTHREAD_RUNNER_3: KthreadRunner = KthreadRunner::new_empty();
-static mut SMP_KTHREAD_RUNNER_4: KthreadRunner = KthreadRunner::new_empty();
-
-
-fn smp_kfn_1() {
+fn smp_kfn(i: i32) {
+    // rros_sleep(10000);
+    const M: usize = 1_000_000_007;
     let (mut first, mut second) = (1, 1);
-    for _ in 0..1000000000 {
-        let temp = first + second;
+    for _ in 0..50000000 {
+        let temp = (first + second) % M;
         first = second;
         second = temp;
-        // unsafe { bindings::usleep_range(100, 105); }
-        first = 1;
-        second = 2;
     }
-    pr_warn!("[DJJSMP] 1 second is: {:?}", second);
-}
-
-fn smp_kfn_2() {
-    let (mut first, mut second) = (1, 1);
-    for _ in 0..1000000000 {
-        let temp = first + second;
-        first = second;
-        second = temp;
-        // unsafe { bindings::usleep_range(200, 205); }
-        first = 1;
-        second = 2;
-    }
-    pr_warn!("[DJJSMP] 2 second is: {:?}", second);
-}
-
-fn smp_kfn_3() {
-    let (mut first, mut second) = (1, 1);
-    for _ in 0..1000000000 {
-        let temp = first + second;
-        first = second;
-        second = temp;
-        // unsafe { bindings::usleep_range(200, 205); }
-        first = 1;
-        second = 2;
-    }
-    pr_warn!("[DJJSMP] 3 second is: {:?}", second);
-}
-
-fn smp_kfn_4() {
-    let (mut first, mut second) = (1, 1);
-    for _ in 0..1000000000 {
-        let temp = first + second;
-        first = second;
-        second = temp;
-        // unsafe { bindings::usleep_range(200, 205); }
-        first = 1;
-        second = 2;
-    }
-    pr_warn!("[DJJSMP] 4 second is: {:?}", second);
+    pr_warn!("[DJJ] the calculation result of thread {:?} is: {:?}", i, second);
 }
 
 pub fn test_smp() {
-    let mono_read_result1 = unsafe { RROS_MONO_CLOCK.read() };
-    let rt_read_result1 = unsafe { RROS_REALTIME_CLOCK.read() };
-    pr_warn!("[DJJ] 1 mono: {:?}, realtime: {:?}", mono_read_result1, rt_read_result1);
+
+    let mut SMP_KTHREAD_RUNNER_1: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_2: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_3: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_4: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_5: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_6: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_7: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_8: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_9: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_10: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_11: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_12: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_13: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_14: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_15: KthreadRunner = KthreadRunner::new_empty();
+    let mut SMP_KTHREAD_RUNNER_16: KthreadRunner = KthreadRunner::new_empty();
 
     unsafe {
-        SMP_KTHREAD_RUNNER_1.init(Box::try_new(smp_kfn_1).unwrap());
-        SMP_KTHREAD_RUNNER_2.init(Box::try_new(smp_kfn_2).unwrap());
-        SMP_KTHREAD_RUNNER_3.init(Box::try_new(smp_kfn_3).unwrap());
-        SMP_KTHREAD_RUNNER_4.init(Box::try_new(smp_kfn_4).unwrap());
+        SMP_KTHREAD_RUNNER_1.init(Box::try_new(||smp_kfn(1)).unwrap());
+        SMP_KTHREAD_RUNNER_2.init(Box::try_new(||smp_kfn(2)).unwrap());
+        SMP_KTHREAD_RUNNER_3.init(Box::try_new(||smp_kfn(3)).unwrap());
+        SMP_KTHREAD_RUNNER_4.init(Box::try_new(||smp_kfn(4)).unwrap());
+        SMP_KTHREAD_RUNNER_5.init(Box::try_new(||smp_kfn(5)).unwrap());
+        SMP_KTHREAD_RUNNER_6.init(Box::try_new(||smp_kfn(6)).unwrap());
+        SMP_KTHREAD_RUNNER_7.init(Box::try_new(||smp_kfn(7)).unwrap());
+        SMP_KTHREAD_RUNNER_8.init(Box::try_new(||smp_kfn(8)).unwrap());
+        SMP_KTHREAD_RUNNER_1.init(Box::try_new(||smp_kfn(9)).unwrap());
+        SMP_KTHREAD_RUNNER_2.init(Box::try_new(||smp_kfn(10)).unwrap());
+        SMP_KTHREAD_RUNNER_3.init(Box::try_new(||smp_kfn(11)).unwrap());
+        SMP_KTHREAD_RUNNER_4.init(Box::try_new(||smp_kfn(12)).unwrap());
+        SMP_KTHREAD_RUNNER_5.init(Box::try_new(||smp_kfn(13)).unwrap());
+        SMP_KTHREAD_RUNNER_6.init(Box::try_new(||smp_kfn(14)).unwrap());
+        SMP_KTHREAD_RUNNER_7.init(Box::try_new(||smp_kfn(15)).unwrap());
+        SMP_KTHREAD_RUNNER_8.init(Box::try_new(||smp_kfn(16)).unwrap());
 
         SMP_KTHREAD_RUNNER_1.run(c_str!("smp_kthread_1"));
         SMP_KTHREAD_RUNNER_2.run(c_str!("smp_kthread_2"));
         SMP_KTHREAD_RUNNER_3.run(c_str!("smp_kthread_3"));
         SMP_KTHREAD_RUNNER_4.run(c_str!("smp_kthread_4"));
+        SMP_KTHREAD_RUNNER_5.run(c_str!("smp_kthread_5"));
+        SMP_KTHREAD_RUNNER_6.run(c_str!("smp_kthread_6"));
+        SMP_KTHREAD_RUNNER_7.run(c_str!("smp_kthread_7"));
+        SMP_KTHREAD_RUNNER_8.run(c_str!("smp_kthread_8"));
+        SMP_KTHREAD_RUNNER_1.run(c_str!("smp_kthread_9"));
+        SMP_KTHREAD_RUNNER_2.run(c_str!("smp_kthread_10"));
+        SMP_KTHREAD_RUNNER_3.run(c_str!("smp_kthread_11"));
+        SMP_KTHREAD_RUNNER_4.run(c_str!("smp_kthread_12"));
+        SMP_KTHREAD_RUNNER_5.run(c_str!("smp_kthread_13"));
+        SMP_KTHREAD_RUNNER_6.run(c_str!("smp_kthread_14"));
+        SMP_KTHREAD_RUNNER_7.run(c_str!("smp_kthread_15"));
+        SMP_KTHREAD_RUNNER_8.run(c_str!("smp_kthread_16"));
     }
-
-    let mono_read_result2 = unsafe { RROS_MONO_CLOCK.read() };
-    let rt_read_result2 = unsafe { RROS_REALTIME_CLOCK.read() };
-    pr_warn!("[DJJ] 2 mono: {:?}, realtime: {:?}", mono_read_result2, rt_read_result2);
-
 }

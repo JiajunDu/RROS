@@ -300,7 +300,7 @@ extern void rust_resume_oob_task(void *ptr, int cpu);
 void __weak resume_oob_task(struct task_struct *p)
 {
 	void *thread = p->thread_info.oob_state.thread;
-	pr_info("the passed thread ptr is %px", thread);
+	// pr_info("the passed thread ptr is %px", thread);
 	rust_resume_oob_task(thread, task_cpu(p));
 }
 
