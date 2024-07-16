@@ -75,6 +75,7 @@ mod proxy;
 mod types_test;
 mod wait;
 mod xbuf;
+mod smp_test;
 
 #[cfg(CONFIG_NET)]
 mod net;
@@ -89,7 +90,7 @@ module! {
     license: b"GPL v2",
     params: {
         oobcpus_arg: str {
-            default: b"0-1\0",
+            default: b"0-7\0",
             permissions: 0o444,
             description: b"which cpus in the oob",
         },
@@ -399,6 +400,8 @@ impl KernelModule for Rros {
             }
         }
         test_lantency();
+
+        smp_test::test_smp();
 
         // let mut rros_kthread1 = rros_kthread::new(fn1);
         // let mut rros_kthread2 = rros_kthread::new(fn2);
