@@ -7,6 +7,10 @@ use crate::{
 use core::{cell::Cell, ptr::NonNull};
 use kernel::ktime::KtimeT;
 
+extern "C" {
+    fn rust_helper_smp_wmb();
+}
+
 pub struct RrosFlag {
     pub wait: RrosWaitQueue,
     pub raised: Cell<bool>,
@@ -48,6 +52,12 @@ impl RrosFlag {
     // }
 
     #[inline]
+    pub fn peek(&self) -> bool {
+        unsafe { rust_helper_smp_wmb(); }
+        self.raised.get()
+    }
+
+    #[inline]
     pub fn read(&self) -> bool {
         if self.raised.get() {
             self.raised.set(false);
@@ -62,6 +72,16 @@ impl RrosFlag {
         unsafe {
             x.as_mut()
                 .wait_timeout(RROS_INFINITE, RrosTmode::RrosRel, || self.read())
+        }
+    }
+
+    #[inline]
+    pub fn wait_same(&mut self) -> i32 {
+        // TODO: Try to get around the limitations of immutable borrowing.
+        let mut x = unsafe { NonNull::new_unchecked(&self.wait as *const _ as *mut RrosWaitQueue) };
+        unsafe {
+            x.as_mut()
+                .wait_timeout(RROS_INFINITE, RrosTmode::RrosRel, || self.peek())
         }
     }
 
